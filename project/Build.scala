@@ -61,4 +61,15 @@ object Build extends Build {
       akka
     )
   )
+
+  lazy val sample = Project(
+    id = idOf("sample"),
+    base = file(idOf("sample")),
+    settings = basicSettings ++ Seq(
+      name := idOf("sample")
+    ),
+    dependencies = Seq(
+      failurewall
+    )
+  )
 }
