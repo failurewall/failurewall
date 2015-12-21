@@ -30,7 +30,7 @@ val wallSina: Failurewall[Int, String] = ???
 val wallRose: Failurewall[Int, Int] = ???
 val wallMaria: Failurewall[Double, Int] = ???
 
-val walls: [Double, Int] = wallSina compose wallRose compose wallMaria
+val walls: [Double, String] = wallSina compose wallRose compose wallMaria
 ```
 
 ## Build-in walls
