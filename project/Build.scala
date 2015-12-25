@@ -47,10 +47,10 @@ object Build extends Build {
   )
 
   lazy val failurewall = Project(
-    id = project,
-    base = file(project),
+    id = idOf("patterns"),
+    base = file(idOf("patterns")),
     settings = basicSettings ++ Seq(
-      name := project,
+      name := idOf("patterns"),
       libraryDependencies ++= Seq(
         "com.typesafe.akka" %% "akka-actor" % "2.4.1"
       )
