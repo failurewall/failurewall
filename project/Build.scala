@@ -6,6 +6,7 @@ object Build extends Build {
   def idOf(name: String): String = s"$project-$name"
 
   val basicSettings = Seq(
+    organization := "com.okumin",
     version := "0.0.1",
     scalaVersion := "2.11.7"
   )
@@ -16,13 +17,13 @@ object Build extends Build {
     settings = Seq(
       name := idOf("root")
     ),
-    aggregate = Seq(core, akka, failurewall)
+    aggregate = Seq(core, akka, patterns)
   )
 
   lazy val core = Project(
     id = idOf("core"),
     base = file(idOf("core")),
-    settings = basicSettings ++ Seq(
+    settings = basicSettings ++ Publish.projectSettings ++ Seq(
       name := idOf("core"),
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
@@ -34,7 +35,7 @@ object Build extends Build {
   lazy val akka = Project(
     id = idOf("akka"),
     base = file(idOf("akka")),
-    settings = basicSettings ++ Seq(
+    settings = basicSettings ++ Publish.projectSettings ++ Seq(
       name := idOf("akka"),
       libraryDependencies ++= Seq(
         "com.typesafe.akka" %% "akka-actor" % "2.4.1"
@@ -46,7 +47,7 @@ object Build extends Build {
     )
   )
 
-  lazy val failurewall = Project(
+  lazy val patterns = Project(
     id = idOf("patterns"),
     base = file(idOf("patterns")),
     settings = basicSettings ++ Seq(
@@ -69,7 +70,7 @@ object Build extends Build {
       name := idOf("sample")
     ),
     dependencies = Seq(
-      failurewall
+      patterns
     )
   )
 }
