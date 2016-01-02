@@ -145,7 +145,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
       "never call the given body and fail immediately" in {
         val breaker = circuitBreaker(maxFailure = 1)
         val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, global)
-        failurewall.call(Future.failed(new RuntimeException))
+        TestHelper.await(failurewall.call(Future.failed(new RuntimeException)))
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
         intercept[FailurewallException] {
