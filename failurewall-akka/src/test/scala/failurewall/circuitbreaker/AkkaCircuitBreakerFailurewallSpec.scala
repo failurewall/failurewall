@@ -1,31 +1,22 @@
 package failurewall.circuitbreaker
 
-import akka.actor.ActorSystem
 import akka.pattern.CircuitBreaker
 import failurewall.FailurewallException
-import failurewall.test.{BodyPromise, TestHelper}
+import failurewall.test.{AkkaSpec, BodyPromise, TestHelper}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
-class AkkaCircuitBreakerFailurewallSpec
-  extends WordSpec
-  with GeneratorDrivenPropertyChecks
-  with BeforeAndAfterAll {
+class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
-  private[this] val system = ActorSystem("akka-circuit-breaker-failure-spec")
   private[this] def circuitBreaker(maxFailure: Int = 3,
                                    callTimeout: FiniteDuration = 10.seconds,
                                    resetTimeout: FiniteDuration = 10.seconds): CircuitBreaker = {
     CircuitBreaker(system.scheduler, maxFailure, callTimeout, resetTimeout)
   }
-
-  override protected def afterAll(): Unit = TestHelper.await(system.terminate())
 
   "AkkaCircuitBreakerFailurewall" when {
     "in CLOSED state" should {
