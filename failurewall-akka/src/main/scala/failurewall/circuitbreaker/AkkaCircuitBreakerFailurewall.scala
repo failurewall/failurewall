@@ -6,7 +6,7 @@ import failurewall.util.FailurewallHelper
 import failurewall.{Failurewall, FailurewallException}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 /**
  * A circuit breaker with [[Failurewall]]'s interface implemented by Akka's [[CircuitBreaker]].
@@ -51,19 +51,17 @@ final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
    *         a failed future with [[FailurewallException]] if a call is rejected
    */
   override def call(body: => Future[A]): Future[A] = {
-    def recoverToTry[T](future: Future[T]): Future[Try[T]] = {
-      future.map[Try[T]](Success.apply).recover { case e => Failure(e) }
-    }
-
     val promise = Promise[A]()
     circuitBreaker.withCircuitBreaker {
-      recoverToTry(promise.completeWith(FailurewallHelper.callSafely(body)).future).filter(feedback)
+      FailurewallHelper
+        .mapToTry(promise.completeWith(FailurewallHelper.callSafely(body)).future)
+        .filter(feedback)
     }.recoverWith {
       case e: scala.concurrent.TimeoutException =>
         Future.failed(new FailurewallException("Timed out on the circuit breaker.", e))
       case e: CircuitBreakerOpenException =>
         Future.failed(new FailurewallException("The circuit breaker is on OPEN or HALF-OPEN state.", e))
-      case _: NoSuchElementException => recoverToTry(promise.future)
+      case _: NoSuchElementException => FailurewallHelper.mapToTry(promise.future)
     }.flatMap(Future.fromTry)
   }
 }

@@ -1,7 +1,8 @@
 package failurewall.util
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 
 object FailurewallHelper {
   /**
@@ -13,5 +14,12 @@ object FailurewallHelper {
     } catch {
       case NonFatal(e) => Future.failed(e)
     }
+  }
+
+  /**
+   * Maps a [[Future]]'s result to [[Try]].
+   */
+  def mapToTry[A](future: Future[A])(implicit executor: ExecutionContext): Future[Try[A]] = {
+    future.map[Try[A]](Success.apply).recover { case e => Failure(e) }
   }
 }

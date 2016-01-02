@@ -3,7 +3,7 @@ package failurewall.retry
 import failurewall.Failurewall
 import failurewall.util.FailurewallHelper
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 /**
  * A [[Failurewall]] implementing the retry pattern.
@@ -27,11 +27,8 @@ final class RetriableFailurewall[A](maxTrialTimes: Int,
    * @return the result of `body` with this [[Failurewall]]
    */
   override def call(body: => Future[A]): Future[A] = {
-    def recoverToTry[T](future: Future[T]): Future[Try[T]] = {
-      future.map[Try[T]](Success.apply).recover { case e => Failure(e) }
-    }
     def retry(i: Int): Future[A] = {
-      recoverToTry(FailurewallHelper.callSafely(body)).flatMap {
+      FailurewallHelper.mapToTry(FailurewallHelper.callSafely(body)).flatMap {
         case result if feedback(result) => Future.fromTry(result)
         case result if i == maxTrialTimes => Future.fromTry(result)
         case _ => retry(i + 1)
