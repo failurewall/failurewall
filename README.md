@@ -55,11 +55,11 @@ This library provides some of Failurewalls to handle failures.
 
 ### Retry
 
-RetriableFailurewall lets requests recover from temporary failures.
+RetryFailurewall lets requests recover from temporary failures.
 
 ```scala
 val executor: ExecutionContext = ???
-val failurewall = RetriableFailurewall[Response](10, executor)
+val failurewall = RetryFailurewall[Response](10, executor)
 failure.call(Future.failed(new RuntimeException)) // retry 10 times
 ```
 

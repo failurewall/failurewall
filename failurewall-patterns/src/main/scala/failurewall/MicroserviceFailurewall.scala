@@ -2,7 +2,7 @@ package failurewall
 
 import akka.actor.Scheduler
 import failurewall.circuitbreaker.AkkaCircuitBreakerFailurewall
-import failurewall.retry.RetriableFailurewall
+import failurewall.retry.RetryFailurewall
 import failurewall.semaphore.StdSemaphoreFailurewall
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
@@ -69,7 +69,7 @@ object MicroserviceFailurewall {
       executor
     )(circuitBreakerConfig.feedback)
     val semaphore = StdSemaphoreFailurewall[A](semaphoreConfig.permits, executor)
-    val retry = RetriableFailurewall.withFeedback[A](
+    val retry = RetryFailurewall.withFeedback[A](
       retryConfig.maxTrialTimes,
       executor
     )(retryConfig.feedback)
