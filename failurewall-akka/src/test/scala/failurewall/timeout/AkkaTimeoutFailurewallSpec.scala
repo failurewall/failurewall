@@ -48,10 +48,19 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
       assert(counter.get() === 1)
 
       val actual = failurewall.call(Future.failed(error))
-      intercept[FailurewallException] {
-        TestHelper.await(actual).get
-      }
+      assert(TestHelper.await(actual) === Failure(error))
       TestHelper.assertWhile(counter.get() === 1, 300.millis)
+    }
+
+    "return a failed Future even if the given body throws exception" in {
+      val counter = new AtomicInteger(0)
+      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, global) {
+        counter.incrementAndGet()
+      }
+      val error = new RuntimeException
+      val actual = failurewall.call(throw error)
+      assert(TestHelper.await(actual) === Failure(error))
+      TestHelper.assertWhile(counter.get() === 0, 300.millis)
     }
   }
 }

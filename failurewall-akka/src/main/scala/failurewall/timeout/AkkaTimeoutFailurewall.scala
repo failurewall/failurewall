@@ -1,6 +1,7 @@
 package failurewall.timeout
 
 import akka.actor.Scheduler
+import failurewall.util.FailurewallHelper
 import failurewall.{Failurewall, FailurewallException}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -37,7 +38,7 @@ final class AkkaTimeoutFailurewall[A](duration: FiniteDuration,
     val error = new FailurewallException(s"It took $duration and timed out.")
     val promise = Promise[A]()
     val cancellable = scheduler.scheduleOnce(duration) { promise.failure(error) }
-    val result = Future.firstCompletedOf(Seq(body, promise.future))
+    val result = Future.firstCompletedOf(Seq(FailurewallHelper.callSafely(body), promise.future))
     result.onComplete {
       case Failure(e) if e eq error => onTimeout
       case _ => cancellable.cancel()
