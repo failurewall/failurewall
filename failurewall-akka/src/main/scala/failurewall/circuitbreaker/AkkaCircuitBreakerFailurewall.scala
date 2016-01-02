@@ -57,7 +57,7 @@ final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
 
     val promise = Promise[A]()
     circuitBreaker.withCircuitBreaker {
-      recoverToTry(promise.completeWith(FailurewallHelper.call(body)).future).filter(feedback)
+      recoverToTry(promise.completeWith(FailurewallHelper.callSafely(body)).future).filter(feedback)
     }.recoverWith {
       case e: scala.concurrent.TimeoutException =>
         Future.failed(new FailurewallException("Timed out on the circuit breaker.", e))

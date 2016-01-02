@@ -7,7 +7,7 @@ object FailurewallHelper {
   /**
    * Calls a body safely.
    */
-  def call[A](body: => Future[A]): Future[A] = {
+  def callSafely[A](body: => Future[A]): Future[A] = {
     try {
       body
     } catch {

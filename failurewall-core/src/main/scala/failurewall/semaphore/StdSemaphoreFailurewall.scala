@@ -26,7 +26,7 @@ final class StdSemaphoreFailurewall[A](semaphore: Semaphore,
   override def call(body: => Future[A]): Future[A] = {
     semaphore.tryAcquire() match {
       case true =>
-          val result = FailurewallHelper.call(body)
+          val result = FailurewallHelper.callSafely(body)
           result.onComplete { case _ => semaphore.release() }
           result
       case false => Future.failed(new FailurewallException("Failed acquiring a permit."))

@@ -31,7 +31,7 @@ final class RetriableFailurewall[A](maxTrialTimes: Int,
       future.map[Try[T]](Success.apply).recover { case e => Failure(e) }
     }
     def retry(i: Int): Future[A] = {
-      recoverToTry(FailurewallHelper.call(body)).flatMap {
+      recoverToTry(FailurewallHelper.callSafely(body)).flatMap {
         case result if feedback(result) => Future.fromTry(result)
         case result if i == maxTrialTimes => Future.fromTry(result)
         case _ => retry(i + 1)
