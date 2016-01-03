@@ -2,6 +2,7 @@ package failurewall
 
 import akka.actor.ActorSystem
 import failurewall.MicroserviceFailurewall.{CircuitBreakerConfig, RetryConfig, SemaphoreConfig}
+import failurewall.retry.{ShouldNotRetry, ShouldRetry}
 import failurewall.test.{BodyPromise, TestHelper}
 import org.scalatest.{BeforeAndAfterAll, WordSpec}
 import scala.concurrent.ExecutionContext.Implicits._
@@ -17,11 +18,14 @@ class MicroserviceFailurewallSpec extends WordSpec with BeforeAndAfterAll {
   private[this] def create[A](maxFailures: Int = 5,
                               permits: Int = 5,
                               maxTrialTimes: Int = 5)
-                             (feedback: Try[A] => Boolean): Failurewall[A, A] = {
+                             (isSuccess: Try[A] => Boolean): Failurewall[A, A] = {
     MicroserviceFailurewall[A](
-      CircuitBreakerConfig(system.scheduler, maxFailures, 10.seconds, 10.seconds, feedback),
+      CircuitBreakerConfig(system.scheduler, maxFailures, 10.seconds, 10.seconds, isSuccess),
       SemaphoreConfig(permits),
-      RetryConfig(maxTrialTimes, feedback),
+      RetryConfig(maxTrialTimes, isSuccess.andThen {
+        case true => ShouldNotRetry
+        case false => ShouldRetry
+      }),
       global
     )
   }

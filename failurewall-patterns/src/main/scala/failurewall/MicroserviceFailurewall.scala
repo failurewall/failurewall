@@ -2,7 +2,7 @@ package failurewall
 
 import akka.actor.Scheduler
 import failurewall.circuitbreaker.AkkaCircuitBreakerFailurewall
-import failurewall.retry.RetryFailurewall
+import failurewall.retry.{RetryFailurewall, RetryFeedback}
 import failurewall.semaphore.StdSemaphoreFailurewall
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
@@ -47,7 +47,7 @@ object MicroserviceFailurewall {
    * @param maxTrialTimes max trial times
    * @param feedback the logic to test whether a body is successful or not
    */
-  final case class RetryConfig[A](maxTrialTimes: Int, feedback: Try[A] => Boolean)
+  final case class RetryConfig[A](maxTrialTimes: Int, feedback: Try[A] => RetryFeedback)
 
   /**
    * Creates a [[Failurewall]] with a circuit breaker, a semaphore and the retry pattern.

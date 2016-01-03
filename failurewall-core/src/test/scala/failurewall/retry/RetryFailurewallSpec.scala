@@ -23,13 +23,7 @@ class RetryFailurewallSpec extends WordSpec with GeneratorDrivenPropertyChecks {
     "throws IllegalArgumentException if `maxTrialTimes` is less than or equal to 0" in {
       forAll(Gen.chooseNum(Int.MinValue, 0)) { times: Int =>
         intercept[IllegalArgumentException] {
-          new RetryFailurewall[Int](times, _.isSuccess, global)
-        }
-        intercept[IllegalArgumentException] {
-          RetryFailurewall[Int](times, global)
-        }
-        intercept[IllegalArgumentException] {
-          RetryFailurewall.withFeedback[Int](times, global)(_.isSuccess)
+          new RetryFailurewall[Int](times, _ => ShouldNotRetry, global)
         }
       }
     }
@@ -68,8 +62,9 @@ class RetryFailurewallSpec extends WordSpec with GeneratorDrivenPropertyChecks {
     "retry if feedback returns false" in {
       forAll(Gen.chooseNum(1, 10)) { times: Int =>
         val failurewall = RetryFailurewall.withFeedback[Int](times, global) {
-          case Success(10) => false
-          case v => v.isSuccess
+          case Success(10) => ShouldRetry
+          case Success(_) => ShouldNotRetry
+          case Failure(_) => ShouldRetry
         }
         val body = BodyPromise[Int]()
         body.success(10)
