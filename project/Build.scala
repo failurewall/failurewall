@@ -74,4 +74,15 @@ object Build extends Build {
       patterns
     )
   )
+
+  lazy val benchmark = Project(
+    id = idOf("benchmark"),
+    base = file(idOf("benchmark")),
+    settings = basicSettings ++ Seq(
+      name := idOf("benchmark")
+    ),
+    dependencies = Seq(
+      akka
+    )
+  )
 }
