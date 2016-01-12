@@ -79,7 +79,17 @@ object Build extends Build {
     id = idOf("benchmark"),
     base = file(idOf("benchmark")),
     settings = basicSettings ++ Seq(
-      name := idOf("benchmark")
+      name := idOf("benchmark"),
+      resolvers ++= Seq(
+        "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
+      ),
+      libraryDependencies ++= Seq(
+        "com.storm-enroute" %% "scalameter" % "0.7" % "test"
+      ),
+      testFrameworks ++= Seq(
+        new TestFramework("org.scalameter.ScalaMeterFramework")
+      ),
+      parallelExecution in Test := false
     ),
     dependencies = Seq(
       akka
