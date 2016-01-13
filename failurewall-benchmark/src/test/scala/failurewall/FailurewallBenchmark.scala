@@ -1,17 +1,7 @@
 package failurewall
 
-import failurewall.test.Benchmark
+import failurewall.test.FailurewallBenchmark
 
-object FailurewallBenchmark extends Benchmark {
-  val failurewall = Failurewall.identity[Int]
-
-  performance of "Failurewall(sequential execution)" in {
-    measure method "call(low latency)" in {
-      using(lowLatencyGen) in { bodies =>
-        bodies.foreach { body =>
-          await(failurewall.call(body))
-        }
-      }
-    }
-  }
+object FailurewallBenchmark extends FailurewallBenchmark {
+  override protected[this] val failurewall: Failurewall[Int, Int] = Failurewall.identity
 }
