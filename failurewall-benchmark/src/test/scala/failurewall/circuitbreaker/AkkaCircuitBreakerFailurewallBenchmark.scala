@@ -2,7 +2,6 @@ package failurewall.circuitbreaker
 
 import failurewall.Failurewall
 import failurewall.test.{ActorSystemSetup, FailurewallBenchmark}
-import scala.concurrent.ExecutionContext.global
 import scala.concurrent.duration._
 
 class AkkaCircuitBreakerFailurewallBenchmark extends FailurewallBenchmark with ActorSystemSetup {
@@ -11,6 +10,6 @@ class AkkaCircuitBreakerFailurewallBenchmark extends FailurewallBenchmark with A
     maxFailures = 5,
     callTimeout = 10.seconds,
     resetTimeout = 10.seconds,
-    global
+    executionContext
   )
 }
