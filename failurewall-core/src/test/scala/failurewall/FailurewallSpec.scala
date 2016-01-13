@@ -1,12 +1,10 @@
 package failurewall
 
-import failurewall.test.TestHelper
-import org.scalatest.WordSpec
-import scala.concurrent.ExecutionContext.Implicits._
+import failurewall.test.{TestHelper, WallSpec}
 import scala.concurrent.Future
 import scala.util.Success
 
-class FailurewallSpec extends WordSpec {
+class FailurewallSpec extends WallSpec {
   "Failurewall" should {
     "be able to be mixed with another Failurewall" in {
       val wallSina = new Failurewall[Int, String] {

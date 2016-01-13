@@ -3,14 +3,13 @@ package failurewall
 import akka.actor.ActorSystem
 import failurewall.MicroserviceFailurewall.{CircuitBreakerConfig, RetryConfig, SemaphoreConfig}
 import failurewall.retry.{ShouldNotRetry, ShouldRetry}
-import failurewall.test.{BodyPromise, TestHelper}
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
-import scala.concurrent.ExecutionContext.Implicits._
+import failurewall.test.{BodyPromise, TestHelper, WallSpec}
+import org.scalatest.BeforeAndAfterAll
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
-class MicroserviceFailurewallSpec extends WordSpec with BeforeAndAfterAll {
+class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
   private[this] val system = ActorSystem("microservice-failurewall")
 
   override protected def afterAll(): Unit = TestHelper.await(system.terminate())
@@ -26,7 +25,7 @@ class MicroserviceFailurewallSpec extends WordSpec with BeforeAndAfterAll {
         case true => ShouldNotRetry
         case false => ShouldRetry
       }),
-      global
+      executor
     )
   }
 

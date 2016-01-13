@@ -1,13 +1,12 @@
 package failurewall.retry
 
 import failurewall.test.DurationArbitrary._
+import failurewall.test.WallSpec
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
-import org.scalatest.WordSpec
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import scala.concurrent.duration._
 
-class BackoffStrategySpec extends WordSpec with GeneratorDrivenPropertyChecks {
+class BackoffStrategySpec extends WallSpec {
   "ConstantBackoffStrategy" should {
     "always return the same duration" in {
       forAll { (duration: FiniteDuration, trialTimes: Int) =>

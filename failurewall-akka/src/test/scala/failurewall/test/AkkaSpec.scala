@@ -1,12 +1,10 @@
 package failurewall.test
 
 import akka.actor.ActorSystem
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
+import org.scalatest.BeforeAndAfterAll
 
 trait AkkaSpec
-  extends WordSpec
-  with GeneratorDrivenPropertyChecks
+  extends WallSpec
   with BeforeAndAfterAll {
 
   val system = ActorSystem("akka-circuit-breaker-failure-spec")

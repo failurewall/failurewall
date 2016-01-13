@@ -3,7 +3,6 @@ package failurewall.timeout
 import failurewall.FailurewallException
 import failurewall.test.{AkkaSpec, BodyPromise, TestHelper}
 import java.util.concurrent.atomic.AtomicInteger
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
@@ -12,7 +11,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
   "AkkaTimeoutFailurewall" should {
     "call the given body and return the result" in {
       val counter = new AtomicInteger(0)
-      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, global) {
+      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, executor) {
         counter.incrementAndGet()
       }
       val promise = BodyPromise[Int]()
@@ -25,7 +24,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
 
     "call the given body and return a timeout error and onTimeout is invoked" in {
       val counter = new AtomicInteger(0)
-      val failurewall = AkkaTimeoutFailurewall[Int](1.millis, system.scheduler, global) {
+      val failurewall = AkkaTimeoutFailurewall[Int](1.millis, system.scheduler, executor) {
         counter.incrementAndGet()
       }
       val promise = BodyPromise[Int]()
@@ -39,7 +38,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
 
     "not invoke onTimeout even if the given body fails with FailurewallException" in {
       val counter = new AtomicInteger(0)
-      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, global) {
+      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, executor) {
         counter.incrementAndGet()
       }
 
@@ -54,7 +53,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
 
     "return a failed Future even if the given body throws exception" in {
       val counter = new AtomicInteger(0)
-      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, global) {
+      val failurewall = AkkaTimeoutFailurewall[Int](10.millis, system.scheduler, executor) {
         counter.incrementAndGet()
       }
       val error = new RuntimeException

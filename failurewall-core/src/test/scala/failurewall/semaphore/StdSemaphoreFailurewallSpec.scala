@@ -1,22 +1,19 @@
 package failurewall.semaphore
 
 import failurewall.FailurewallException
-import failurewall.test.{BodyPromise, TestHelper}
+import failurewall.test.{BodyPromise, TestHelper, WallSpec}
 import java.util.concurrent.Semaphore
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalatest.WordSpec
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
 
-class StdSemaphoreFailurewallSpec extends WordSpec with GeneratorDrivenPropertyChecks {
+class StdSemaphoreFailurewallSpec extends WallSpec {
   "StdSemaphoreFailurewall" when {
     "permits are available" should {
       "invoke the given body" in {
         forAll { result: Int =>
           val semaphore = new Semaphore(3)
-          val failurewall = StdSemaphoreFailurewall[Int](semaphore, global)
+          val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
           val body = BodyPromise[Int]()
           val actual = failurewall.call(body.future)
 
@@ -32,7 +29,7 @@ class StdSemaphoreFailurewallSpec extends WordSpec with GeneratorDrivenPropertyC
 
       "invoke the given failed body" in {
         val semaphore = new Semaphore(3)
-        val failurewall = StdSemaphoreFailurewall[Int](semaphore, global)
+        val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
 
@@ -48,7 +45,7 @@ class StdSemaphoreFailurewallSpec extends WordSpec with GeneratorDrivenPropertyC
 
       "not leak permits even if the given body throws an exception" in {
         val semaphore = new Semaphore(3)
-        val failurewall = StdSemaphoreFailurewall[Int](semaphore, global)
+        val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
         val error = new RuntimeException
         val actual = failurewall.call(throw error)
         assert(TestHelper.await(actual) === Failure(error))
@@ -60,7 +57,7 @@ class StdSemaphoreFailurewallSpec extends WordSpec with GeneratorDrivenPropertyC
           (results: Seq[Int], trial: Int) =>
             val size = results.size
             val semaphore = new Semaphore(size)
-            val failurewall = StdSemaphoreFailurewall[Int](semaphore, global)
+            val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
             val bodies = (1 to size).map { _ => Promise[Int]() }
             val futures = bodies.map { p => failurewall.call(p.future) }
             assert(futures.forall(!_.isCompleted))
@@ -97,7 +94,7 @@ class StdSemaphoreFailurewallSpec extends WordSpec with GeneratorDrivenPropertyC
     "permits are not available" should {
       "never call body and fail with FailurewallException" in {
         val semaphore = new Semaphore(1)
-        val failurewall = StdSemaphoreFailurewall[Int](semaphore, global)
+        val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
         failurewall.call(Promise[Int]().future)
 
         val body = BodyPromise[Int]()
