@@ -6,6 +6,8 @@ import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 object TestHelper {
+  def sleep(duration: FiniteDuration = 300.millis): Unit = Thread.sleep(duration.toMillis)
+
   def await[A](future: Future[A]): Try[A] = Try(Await.result(future, 500.seconds))
 
   def awaitAssert(condition: => Boolean, until: FiniteDuration = 500.millis): Unit = {

@@ -93,36 +93,37 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
       }
 
       "reset failure counter if the given body succeeds" in {
-        forAll(Gen.chooseNum(2, 10)) { failureTimes: Int =>
-          val breaker = circuitBreaker(maxFailure = failureTimes)
-          val isOpen = new AtomicBoolean(false)
-          breaker.onOpen(isOpen.set(true))
-          val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
-          (1 to failureTimes - 1).foreach { _ =>
-            val error = new RuntimeException
-            val actual = failurewall.call(Future.failed(error))
-            assert(TestHelper.await(actual) === Failure(error))
-          }
-          assert(!isOpen.get())
-
-          {
-            val actual = failurewall.call(Future(10))
-            assert(TestHelper.await(actual) === Success(10))
-            assert(!isOpen.get())
-          }
-
-          (1 to failureTimes - 1).foreach { _ =>
-            val error = new RuntimeException
-            val actual = failurewall.call(Future.failed(error))
-            assert(TestHelper.await(actual) === Failure(error))
-          }
-          TestHelper.assertWhile(!isOpen.get())
-
+        val failureTimes = 5
+        val breaker = circuitBreaker(maxFailure = failureTimes)
+        val isOpen = new AtomicBoolean(false)
+        breaker.onOpen(isOpen.set(true))
+        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        (1 to failureTimes - 1).foreach { _ =>
           val error = new RuntimeException
           val actual = failurewall.call(Future.failed(error))
           assert(TestHelper.await(actual) === Failure(error))
-          TestHelper.awaitAssert(isOpen.get())
         }
+        assert(!isOpen.get())
+
+        TestHelper.sleep() // It is possible for callbacks to be reordered
+
+        {
+          val actual = failurewall.call(Future(10))
+          assert(TestHelper.await(actual) === Success(10))
+          assert(!isOpen.get())
+        }
+
+        (1 to failureTimes - 1).foreach { _ =>
+          val error = new RuntimeException
+          val actual = failurewall.call(Future.failed(error))
+          assert(TestHelper.await(actual) === Failure(error))
+        }
+        TestHelper.assertWhile(!isOpen.get())
+
+        val error = new RuntimeException
+        val actual = failurewall.call(Future.failed(error))
+        assert(TestHelper.await(actual) === Failure(error))
+        TestHelper.awaitAssert(isOpen.get())
       }
 
       "increase the failure count if the given feedback return false" in {

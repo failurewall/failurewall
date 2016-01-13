@@ -76,6 +76,7 @@ class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
     "fail immediately by the circuit breaker when the resource is unavailable" in {
       val failurewall = create[Int](maxFailures = 1)(_.isSuccess)
       TestHelper.await(failurewall.call(Future.failed(new RuntimeException)))
+      TestHelper.sleep()
 
       val body = BodyPromise[Int]()
       val actual = failurewall.call(body.future)
