@@ -3,6 +3,7 @@ package sample.failurewall
 import akka.actor.ActorSystem
 import failurewall.MicroserviceFailurewall
 import failurewall.MicroserviceFailurewall.{CircuitBreakerConfig, RetryConfig, SemaphoreConfig}
+import failurewall.retry.{ShouldNotRetry, ShouldRetry}
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -27,8 +28,8 @@ object HttpProxyServer {
     RetryConfig[Response](
       maxTrialTimes = 5,
       feedback = {
-        case Success(Response(500, _)) => false
-        case _ => true
+        case Success(Response(500, _)) => ShouldRetry
+        case _ => ShouldNotRetry
       }
     ),
     global
