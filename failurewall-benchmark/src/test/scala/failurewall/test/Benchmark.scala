@@ -20,7 +20,7 @@ trait Benchmark extends Bench.LocalTime {
 trait FailurewallBenchmark extends Benchmark {
   protected[this] val failurewall: Failurewall[Int, Int]
 
-  performance of s"${getClass.getName.replace("$", "")}(sequential execution)" in {
+  performance of s"${getClass.getName}(sequential execution)" in {
     measure method "call(low latency)" in {
       using(lowLatencyGen) in { bodies =>
         bodies.foreach(await(_).get)
