@@ -23,7 +23,7 @@ trait FailurewallBenchmark extends Benchmark {
   performance of s"${getClass.getName.replace("$", "")}(sequential execution)" in {
     measure method "call(low latency)" in {
       using(lowLatencyGen) in { bodies =>
-        bodies.foreach(await)
+        bodies.foreach(await(_).get)
       }
     }
   }
