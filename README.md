@@ -14,11 +14,18 @@ You should add the following dependency.
 libraryDependencies += "com.okumin" %% "failurewall-core" % "0.1.0"
 ```
 
-If you are using Akka 2.4 and would like to use `AkkaCircuitBreakerFailurewall`, add also
+If you are using Akka 2.4, you can use `failurewall-akka`.
+`failurewall-akka` provides the following failurewalls.
+
+- circuit breaker
+- timeout
+- retry with backoff
 
 ```
 libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.1.0"
 ```
+
+If you are using Akka 2.3, see also [failurewall-akka23](https://github.com/failurewall/failurewall-akka23).
 
 ## How to use
 
