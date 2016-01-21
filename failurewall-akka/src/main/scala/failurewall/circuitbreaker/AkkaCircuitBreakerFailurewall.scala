@@ -6,7 +6,7 @@ import failurewall.util.FailurewallHelper
 import failurewall.{Failurewall, FailurewallException}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
  * A circuit breaker with [[Failurewall]]'s interface implemented by Akka's [[CircuitBreaker]].
@@ -40,7 +40,7 @@ import scala.util.Try
  * @param executor ExecutionContext
  */
 final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
-                                             feedback: Try[A] => Boolean,
+                                             feedback: Try[A] => CircuitBreakerFeedback,
                                              implicit private[this] val executor: ExecutionContext)
   extends Failurewall[A, A] {
 
@@ -55,7 +55,12 @@ final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
     circuitBreaker.withCircuitBreaker {
       FailurewallHelper
         .mapToTry(promise.completeWith(FailurewallHelper.callSafely(body)).future)
-        .filter(feedback)
+        .filter { v =>
+          feedback(v) match {
+            case Available => true
+            case Unavailable => false
+          }
+        }
     }.recoverWith {
       case e: scala.concurrent.TimeoutException =>
         Future.failed(new FailurewallException("Timed out on the circuit breaker.", e))
@@ -69,21 +74,26 @@ final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
 object AkkaCircuitBreakerFailurewall {
   /**
    * Creates [[AkkaCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
-   * The created [[AkkaCircuitBreakerFailurewall]] considers a body as successful if it is a successful future.
+   * The created [[AkkaCircuitBreakerFailurewall]] considers a call as successful
+   * if it is a successful future.
    * @param circuitBreaker circuit breaker for [[AkkaCircuitBreakerFailurewall]]
    * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
    */
   def apply[A](circuitBreaker: CircuitBreaker,
                executor: ExecutionContext): AkkaCircuitBreakerFailurewall[A] = {
-    withFeedback[A](circuitBreaker, executor)(_.isSuccess)
+    withFeedback[A](circuitBreaker, executor) {
+      case Success(_) => Available
+      case Failure(_) => Unavailable
+    }
   }
 
   /**
    * Creates [[AkkaCircuitBreakerFailurewall]] with the given parameters.
-   * The created [[AkkaCircuitBreakerFailurewall]] considers a body as successful if it is a successful future.
+   * The created [[AkkaCircuitBreakerFailurewall]] considers a call as successful
+   * if it is a successful future.
    * @param scheduler scheduler used in the circuit breaker
    * @param maxFailures allowable failure times
-   * @param callTimeout timeout for invoking a body
+   * @param callTimeout timeout for invoking a call
    * @param resetTimeout timeout for a attempt to return to the CLOSED state.
    * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
    */
@@ -92,43 +102,38 @@ object AkkaCircuitBreakerFailurewall {
                callTimeout: FiniteDuration,
                resetTimeout: FiniteDuration,
                executor: ExecutionContext): AkkaCircuitBreakerFailurewall[A] = {
-    withFeedback[A](scheduler, maxFailures, callTimeout, resetTimeout, executor)(_.isSuccess)
+    withFeedback[A](scheduler, maxFailures, callTimeout, resetTimeout, executor) {
+      case Success(_) => Available
+      case Failure(_) => Unavailable
+    }
   }
 
   /**
    * Creates [[AkkaCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
-   * `feedback` should return false if the circuit breaker should regard the result as a failure
-   * and increment its failure counters, e.g. connection errors.
-   * On the other hand, `feedback` should return true if errors about business logic occurs
-   * since such errors never recover even if waiting a long time.
    * @param circuitBreaker circuit breaker for [[AkkaCircuitBreakerFailurewall]]
    * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
-   * @param feedback the logic to test whether a body is successful or not
+   * @param feedback the logic to test whether a call is successful or not
    */
   def withFeedback[A](circuitBreaker: CircuitBreaker, executor: ExecutionContext)
-                     (feedback: Try[A] => Boolean): AkkaCircuitBreakerFailurewall[A] = {
+                     (feedback: Try[A] => CircuitBreakerFeedback): AkkaCircuitBreakerFailurewall[A] = {
     new AkkaCircuitBreakerFailurewall[A](circuitBreaker, feedback, executor)
   }
 
   /**
    * Creates [[AkkaCircuitBreakerFailurewall]] with the given parameters.
-   * `feedback` should return false if the circuit breaker should regard the result as false
-   * and increment its failure counters, e.g. connection errors.
-   * On the other hand, `feedback` should return true if errors about business logic occurs
-   * since such errors never recover even if waiting a long time.
    * @param scheduler scheduler used in the circuit breaker
    * @param maxFailures allowable failure times
-   * @param callTimeout timeout for invoking a body
+   * @param callTimeout timeout for invoking a call
    * @param resetTimeout timeout for a attempt to return to the CLOSED state.
    * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
-   * @param feedback the logic to test whether a body is successful or not
+   * @param feedback the logic to test whether a call is successful or not
    */
   def withFeedback[A](scheduler: Scheduler,
                       maxFailures: Int,
                       callTimeout: FiniteDuration,
                       resetTimeout: FiniteDuration,
                       executor: ExecutionContext)
-                     (feedback: Try[A] => Boolean): AkkaCircuitBreakerFailurewall[A] = {
+                     (feedback: Try[A] => CircuitBreakerFeedback): AkkaCircuitBreakerFailurewall[A] = {
     val circuitBreaker = CircuitBreaker(scheduler, maxFailures, callTimeout, resetTimeout)
     withFeedback[A](circuitBreaker, executor)(feedback)
   }

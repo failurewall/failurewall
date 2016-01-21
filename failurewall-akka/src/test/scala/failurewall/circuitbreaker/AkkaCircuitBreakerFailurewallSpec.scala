@@ -131,8 +131,9 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val isOpen = new AtomicBoolean(false)
         breaker.onOpen(isOpen.set(true))
         val failurewall = AkkaCircuitBreakerFailurewall.withFeedback[Int](breaker, executor) {
-          case Success(10) => false
-          case v => v.isSuccess
+          case Success(10) => Unavailable
+          case Success(_) => Available
+          case Failure(_) => Unavailable
         }
 
         val actual = failurewall.call(Future(10))

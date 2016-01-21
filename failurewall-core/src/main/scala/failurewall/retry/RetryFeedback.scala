@@ -16,7 +16,7 @@ case object ShouldRetry extends RetryFeedback
 
 /**
  * The call should not be retried.
- * This should be used when the error is not transient.
+ * This should be used when the operation is successful or the error is not transient.
  *
  * - business logic error
  * - the resource that user requests is not found

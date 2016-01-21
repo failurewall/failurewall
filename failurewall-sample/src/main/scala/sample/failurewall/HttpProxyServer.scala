@@ -3,6 +3,7 @@ package sample.failurewall
 import akka.actor.ActorSystem
 import failurewall.MicroserviceFailurewall
 import failurewall.MicroserviceFailurewall.{CircuitBreakerConfig, RetryConfig, SemaphoreConfig}
+import failurewall.circuitbreaker.{Available, Unavailable}
 import failurewall.retry.{ShouldNotRetry, ShouldRetry}
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.Future
@@ -19,9 +20,9 @@ object HttpProxyServer {
       callTimeout = 10.seconds,
       resetTimeout = 5.seconds,
       feedback = {
-        case Success(Response(500, _)) => false
-        case Success(Response(503, _)) => false
-        case _ => true
+        case Success(Response(500, _)) => Unavailable
+        case Success(Response(503, _)) => Unavailable
+        case _ => Available
       }
     ),
     SemaphoreConfig(permits = 10),
