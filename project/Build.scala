@@ -7,7 +7,7 @@ object Build extends Build {
 
   val basicSettings = Seq(
     organization := "com.okumin",
-    version := "0.1.0-SNAPSHOT",
+    version := "0.1.0",
     scalaVersion := "2.11.7"
   )
 

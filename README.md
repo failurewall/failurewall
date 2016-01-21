@@ -11,13 +11,13 @@ Failurewall is inspired by [Hystrix](https://github.com/Netflix/Hystrix) and ada
 You should add the following dependency.
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-core" % "0.0.1"
+libraryDependencies += "com.okumin" %% "failurewall-core" % "0.1.0"
 ```
 
 If you are using Akka 2.4 and would like to use `AkkaCircuitBreakerFailurewall`, add also
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.0.1"
+libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.1.0"
 ```
 
 ## How to use
