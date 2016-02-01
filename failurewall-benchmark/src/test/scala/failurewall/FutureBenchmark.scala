@@ -7,7 +7,7 @@ class FutureBenchmark extends Benchmark {
   performance of "Future(sequential execution)" in {
     measure method "call(low latency)" in {
       using(lowLatencyGen) in { bodies =>
-        bodies().foreach(await)
+        bodies().foreach(await(_).get)
       }
     }
   }
@@ -20,7 +20,18 @@ class FutureBenchmark extends Benchmark {
             body.map(_ => ())
           }
         }
-        await(Future.sequence(result.toList))
+        await(Future.sequence(result.toList)).get
+      }
+    }
+
+    measure method "call(high latency)" in {
+      using(highLatencyGens) in { generators =>
+        val result = generators.par.map { bodies =>
+          bodies().foldLeft(Future.successful(())) { (acc, body) =>
+            body.map(_ => ())
+          }
+        }
+        await(Future.sequence(result.toList)).get
       }
     }
   }
