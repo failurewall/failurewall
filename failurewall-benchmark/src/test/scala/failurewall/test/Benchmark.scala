@@ -16,6 +16,11 @@ trait Benchmark extends Bench.LocalTime {
     () => Iterator.fill(x)(Future(Random.nextInt()))
   }
 
+  protected[this] val lowLatencyGens: Gen[Seq[() => Iterator[Future[Int]]]] = lowLatencyGen.map {
+    x =>
+      (1 to Runtime.getRuntime.availableProcessors()).map { _ => x }
+  }
+
   protected[this] def await[A](future: Future[A]): Try[A] = Try(Await.result(future, 10.seconds))
 }
 
@@ -26,6 +31,19 @@ trait FailurewallBenchmark extends Benchmark {
     measure method "call(low latency)" in {
       using(lowLatencyGen) in { bodies =>
         bodies().foreach(await(_).get)
+      }
+    }
+  }
+
+  performance of s"${getClass.getName}(parallel execution)" in {
+    measure method "call(low latency)" in {
+      using(lowLatencyGens) in { generators =>
+        val result = generators.par.map { bodies =>
+          bodies().foldLeft(Future.successful(())) { (acc, body) =>
+            failurewall.call(body).map(_ => ())
+          }
+        }
+        await(Future.sequence(result.toList))
       }
     }
   }
