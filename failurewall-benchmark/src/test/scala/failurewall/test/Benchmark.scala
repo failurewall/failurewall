@@ -10,10 +10,10 @@ import scala.util.{Random, Try}
 trait Benchmark extends Bench.LocalTime {
   implicit protected[this] def executionContext: ExecutionContext = global
 
-  protected[this] val sizes = Gen.exponential("body")(10000, 1000000, 10)
+  protected[this] val sizes = Gen.exponential("body")(100, 10000, 10)
 
-  protected[this] val lowLatencyGen: Gen[Seq[Future[Int]]] = sizes.map { x =>
-    Seq.fill(x)(Future(Random.nextInt()))
+  protected[this] val lowLatencyGen: Gen[() => Iterator[Future[Int]]] = sizes.map { x =>
+    () => Iterator.fill(x)(Future(Random.nextInt()))
   }
 
   protected[this] def await[A](future: Future[A]): Try[A] = Try(Await.result(future, 10.seconds))
@@ -25,7 +25,7 @@ trait FailurewallBenchmark extends Benchmark {
   performance of s"${getClass.getName}(sequential execution)" in {
     measure method "call(low latency)" in {
       using(lowLatencyGen) in { bodies =>
-        bodies.foreach(await(_).get)
+        bodies().foreach(await(_).get)
       }
     }
   }
