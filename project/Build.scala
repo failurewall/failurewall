@@ -5,10 +5,13 @@ object Build extends Build {
   val project = "failurewall"
   def idOf(name: String): String = s"$project-$name"
 
+  val scala211 = "2.11.8"
+
   val basicSettings = Seq(
     organization := "com.okumin",
     version := "0.1.0",
-    scalaVersion := "2.11.7"
+    crossScalaVersions := Seq(scala211, "2.12.0"),
+    scalaVersion := scala211
   )
 
   lazy val root = Project(
@@ -26,8 +29,8 @@ object Build extends Build {
     settings = basicSettings ++ Publish.projectSettings ++ Seq(
       name := idOf("core"),
       libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-        "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
+        "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+        "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
       )
     )
   )
@@ -38,7 +41,7 @@ object Build extends Build {
     settings = basicSettings ++ Publish.projectSettings ++ Seq(
       name := idOf("akka"),
       libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-actor" % "2.4.1",
+        "com.typesafe.akka" %% "akka-actor" % "2.4.12",
         "org.mockito" % "mockito-core" % "1.10.19" % "test"
       )
     ),
@@ -54,7 +57,7 @@ object Build extends Build {
     settings = basicSettings ++ Seq(
       name := idOf("patterns"),
       libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-actor" % "2.4.1"
+        "com.typesafe.akka" %% "akka-actor" % "2.4.12"
       )
     ),
     dependencies = Seq(
@@ -84,7 +87,7 @@ object Build extends Build {
         "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
       ),
       libraryDependencies ++= Seq(
-        "com.storm-enroute" %% "scalameter" % "0.7" % "test"
+        "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"
       ),
       testFrameworks ++= Seq(
         new TestFramework("org.scalameter.ScalaMeterFramework")
