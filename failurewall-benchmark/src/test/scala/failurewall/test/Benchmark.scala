@@ -37,8 +37,8 @@ trait Benchmark extends Bench.LocalTime {
   protected[this] def await[A](future: Future[A]): Try[A] = Try(Await.result(future, 10.seconds))
 }
 
-trait FailurewallBenchmark extends Benchmark {
-  protected[this] val failurewall: Failurewall[Int, Int]
+trait FailurewallBenchmark[A] extends Benchmark {
+  protected[this] val failurewall: Failurewall[Int, A]
 
   performance of s"${getClass.getName}(sequential execution)" in {
     measure method "call(low latency)" in {
