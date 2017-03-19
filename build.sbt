@@ -18,7 +18,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
   .settings(
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.4.12",
+      "com.typesafe.akka" %% "akka-actor" % "2.4.17",
       "org.mockito" % "mockito-core" % "1.10.19" % "test"
     )
   )
@@ -30,10 +30,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
 lazy val failurewallPatterns = (project in file("failurewall-patterns"))
   .settings(basicSettings: _*)
   .settings(
-    name := "failurewall-patterns",
-    libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.4.12"
-    )
+    name := "failurewall-patterns"
   )
   .dependsOn(
     failurewallCore,
