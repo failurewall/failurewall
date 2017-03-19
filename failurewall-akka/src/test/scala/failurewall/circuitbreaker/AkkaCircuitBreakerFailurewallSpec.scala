@@ -13,7 +13,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
   private[this] def circuitBreaker(maxFailure: Int = 3,
                                    callTimeout: FiniteDuration = 10.seconds,
-                                   resetTimeout: FiniteDuration = 10.seconds): CircuitBreaker = {
+                                   resetTimeout: FiniteDuration = 100.seconds): CircuitBreaker = {
     CircuitBreaker(system.scheduler, maxFailure, callTimeout, resetTimeout)
   }
 
