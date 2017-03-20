@@ -18,8 +18,8 @@ If you are using Akka 2.4, you can use `failurewall-akka`.
 `failurewall-akka` provides the following failurewalls.
 
 - circuit breaker
-- timeout
 - retry with backoff
+- timeout
 
 ```
 libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.1.1"
@@ -39,8 +39,8 @@ object HttpClient {
   def get(url: String): Future[Response] = ???
 }
 
-val failurewall: Failurewall[Response, Response] = ???
-val response: Future[Response] = failurewall.call(HttpClient.get("http://okumin.com/"))
+val wall: Failurewall[Response, Response] = ???
+val response: Future[Response] = wall.call(HttpClient.get("http://okumin.com/"))
 ```
 
 ### Composability
@@ -56,56 +56,86 @@ val wallMaria: Failurewall[Double, Int] = ???
 val walls: [Double, String] = wallSina compose wallRose compose wallMaria
 ```
 
-## Build-in walls
+## Built-in walls(failurewall-core)
 
-This library provides some of Failurewalls to handle failures.
+### [RetryFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/retry/RetryFailurewall.scala)
 
-### Retry
-
-RetryFailurewall lets requests recover from temporary failures.
+Retries on temporary failures.
 
 ```scala
-val executor: ExecutionContext = ???
-val failurewall = RetryFailurewall[Response](10, executor)
-failure.call(Future.failed(new RuntimeException)) // retry 10 times
+val wall = RetryFailurewall[Response](10, executionContext)
+wall.call(Future.failed(new RuntimeException)) // retry 10 times
 ```
 
-### Semaphore
+### [StdSemaphoreFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/semaphore/StdSemaphoreFailurewall.scala)
 
-StdSemaphoreFailurewall keeps resource usage constant.
+Keeps resource usage constant.
 
 ```scala
-val executor: ExecutionContext = ???
-val failurewall = StdSemaphoreFailurewall[Response](10, executor)
+val wall = StdSemaphoreFailurewall[Response](10, executionContext)
 val results = (1 to 100).map { _ =>
-  // fails immediately while 10 calls are blocking
-  failurewall.call(Promise[Response].future)
+  // fails immediately while other 10 calls are running
+  wall.call(doSomeOperation())
 }
 ```
 
-### Circuit breaker
+### [StopwatchFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/stopwatch/StopwatchFailurewall.scala)
 
-AkkaCircuitBreakerFailurewall prevents a failure from leading to cascading other failures.
+Measures the execution time.
 
 ```scala
-val executor: ExecutionContext = ???
+val wall = StopwatchFailurewall[Response](executionContext)
+wall.call(doSomeOperation()) // returns Future[(Try[Response], FiniteDuration)]
+```
+
+## Built-in walls(failurewall-akka)
+
+### [AkkaCircuitBreakerFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/circuitbreaker/AkkaCircuitBreakerFailurewall.scala)
+
+Prevents a failure from leading to cascading other failures.
+
+```scala
 // has a little complicated constructor
-val failurewall: AkkaCircuitBreakerFailurewall[Response] = ???
+val wall: AkkaCircuitBreakerFailurewall[Response] = ???
 val results = (1 to 100).map { _ =>
   // fail-fast after failure times exceeds the threshold
-  failurewall.call(Future {
-    Thread.sleep(1000)
+  wall.call(Future {
     throw new RuntimeException
   })
 }
 ```
 
-### For microservices
+### [AkkaRetryFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/retry/AkkaRetryFailurewall.scala)
 
-MicroserviceFailurewall consists of a circuit breaker, a semaphore and a retry pattern.
+Retries with backoff on temporary failures.
 
 ```scala
-val failurewall = MicroserviceFailurewall[Response](???, ???, ???, ???)
-// protected by the composed wall
-failurewall.call(HttpRequest.get("http://okumin.com/"))
+val backoffStrategy = ExponentialBackoffStrategy(
+  minBackoff = 100.millis,
+  maxBackoff = 10.seconds,
+  multiplier = 2.0
+)
+val wall = AkkaRetryFailurewall[Response](
+  10,
+  backoffStrategy,
+  akkaScheduler,
+  executionContext
+)
+// retry 10 times with exponential backoff
+wall.call(Future.failed(new RuntimeException))
+```
+
+### [AkkaTimeoutFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/timeout/AkkaTimeoutFailurewall.scala)
+
+Times out when it takes some duration.
+
+```scala
+val wall = AkkaTimeoutFailurewall[String](5.seconds, akkaScheduler, executionContext) {
+  logger.error("Timed out.")
+}
+// fails with FailurewallException
+wall.call(Future {
+  Thread.sleep(10000)
+  "mofu"
+})
 ```
