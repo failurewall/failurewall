@@ -23,8 +23,8 @@ class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
       CircuitBreakerConfig(
         system.scheduler,
         maxFailures,
-        10.seconds,
-        10.seconds,
+        100.seconds,
+        100.seconds,
         isSuccess.andThen {
           case true => Available
           case false => Unavailable
