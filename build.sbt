@@ -68,7 +68,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
 
 lazy val basicSettings = Seq(
   organization := "com.okumin",
-  version := "0.2.0-SNAPSHOT",
+  version := "0.1.1",
   crossScalaVersions := Seq("2.11.8", "2.12.1"),
   scalaVersion := "2.11.8"
 )

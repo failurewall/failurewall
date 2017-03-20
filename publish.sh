@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sbt +publishSigned
+sbt "project failurewallCore" +publishSigned
+sbt "project failurewallAkka" +publishSigned

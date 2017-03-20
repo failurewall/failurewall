@@ -11,7 +11,7 @@ Failurewall is inspired by [Hystrix](https://github.com/Netflix/Hystrix) and ada
 You should add the following dependency.
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-core" % "0.1.0"
+libraryDependencies += "com.okumin" %% "failurewall-core" % "0.1.1"
 ```
 
 If you are using Akka 2.4, you can use `failurewall-akka`.
@@ -22,7 +22,7 @@ If you are using Akka 2.4, you can use `failurewall-akka`.
 - retry with backoff
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.1.0"
+libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.1.1"
 ```
 
 If you are using Akka 2.3, see also [failurewall-akka23](https://github.com/failurewall/failurewall-akka23).
