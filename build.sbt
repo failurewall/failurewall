@@ -1,5 +1,9 @@
 
-lazy val root = (project in file(".")).aggregate(failurewallCore, failurewallAkka, failurewallPatterns)
+lazy val root = (project in file("."))
+  .settings(
+    name := "failurewall-root"
+  )
+  .aggregate(failurewallCore, failurewallAkka, failurewallPatterns)
 
 lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(basicSettings: _*)
