@@ -53,6 +53,7 @@ class BackoffStrategySpec extends WallSpec {
     }
 
     "return the maximum backoff if the exponential backoff exceeds the maximum" in {
+      import failurewall.test.DurationArbitrary._
       forAll { (minBackoff: FiniteDuration, maxBackoff: FiniteDuration) =>
         whenever(minBackoff <= maxBackoff) {
           val strategy = ExponentialBackoffStrategy(
