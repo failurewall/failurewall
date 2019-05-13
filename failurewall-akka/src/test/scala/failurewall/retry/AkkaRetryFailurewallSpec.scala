@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalacheck.Gen
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
