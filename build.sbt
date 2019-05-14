@@ -72,7 +72,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
 
 lazy val basicSettings = Seq(
   organization := "com.okumin",
-  version := "0.1.1",
+  version := "0.2.0",
   scalacOptions ++= Seq("-deprecation"),
   crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
   scalaVersion := "2.11.12"
