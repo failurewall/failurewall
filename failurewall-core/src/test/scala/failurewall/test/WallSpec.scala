@@ -2,10 +2,10 @@ package failurewall.test
 
 import java.util.concurrent.Executors
 import org.scalatest.WordSpec
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scala.concurrent.ExecutionContext
 
-trait WallSpec extends WordSpec with GeneratorDrivenPropertyChecks {
+trait WallSpec extends WordSpec with ScalaCheckDrivenPropertyChecks {
   implicit protected[this] def executor: ExecutionContext = WallSpec.executor
 }
 
