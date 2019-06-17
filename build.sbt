@@ -1,3 +1,18 @@
+inThisBuild(List(
+  organization := "com.okumin",
+  homepage := Some(url("https://github.com/failurewall/failurewall")),
+  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  developers := List(
+    Developer(
+      id = "okumin",
+      name = "okumin",
+      email = "git@okumin.com",
+      url = url("https://okumin.com/")
+    )
+  )
+))
+
+skip in publish := true
 
 lazy val root = (project in file("."))
   .settings(
@@ -71,43 +86,12 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
   )
 
 lazy val basicSettings = Seq(
-  organization := "com.okumin",
-  version := "0.2.0",
   scalacOptions ++= Seq("-deprecation"),
   crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
-  scalaVersion := "2.11.12"
+  scalaVersion := "2.11.12",
+  skip in publish := true
 )
 
 lazy val publishSettings = Seq(
-  publishMavenStyle := true,
-  publishArtifact in Test := false,
-  pomIncludeRepository := { _ => false },
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
-  pomExtra := {
-    <url>https://github.com/failurewall/failurewall</url>
-      <licenses>
-        <license>
-          <name>Apache 2 License</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-          <distribution>repo</distribution>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:failurewall/failurewall.git</url>
-        <connection>scm:git@github.com:failurewall/failurewall.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>okumin</id>
-          <name>okumin</name>
-          <url>http://okumin.com/</url>
-        </developer>
-      </developers>
-  }
+  skip in publish := false
 )
