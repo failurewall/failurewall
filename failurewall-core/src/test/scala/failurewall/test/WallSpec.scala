@@ -10,5 +10,5 @@ trait WallSpec extends WordSpec with ScalaCheckDrivenPropertyChecks {
 }
 
 object WallSpec {
-  val executor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(256))
+  private val executor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(256))
 }

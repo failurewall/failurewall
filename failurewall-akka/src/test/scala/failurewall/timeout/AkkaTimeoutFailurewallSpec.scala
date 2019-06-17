@@ -36,7 +36,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
       TestHelper.assertWhile(counter.get() === 1, 300.millis)
     }
 
-    "not invoke onTimeout even if the given body fails with FailurewallException" in {
+    "not invoke onTimeout even if the given body fails with not a regular exception but a FailurewallException" in {
       val counter = new AtomicInteger(0)
       val failurewall = AkkaTimeoutFailurewall[Int](1.second, system.scheduler, executor) {
         counter.incrementAndGet()
@@ -44,6 +44,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
 
       val Failure(error) = TestHelper.await(failurewall.call(Promise[Int]().future))
       assert(error.isInstanceOf[FailurewallException])
+      TestHelper.sleep()
       assert(counter.get() === 1)
 
       val actual = failurewall.call(Future.failed(error))
@@ -51,7 +52,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
       TestHelper.assertWhile(counter.get() === 1, 300.millis)
     }
 
-    "return a failed Future even if the given body throws exception" in {
+    "return a failed Future even if the given body throws exception directly" in {
       val counter = new AtomicInteger(0)
       val failurewall = AkkaTimeoutFailurewall[Int](1.second, system.scheduler, executor) {
         counter.incrementAndGet()
