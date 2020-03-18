@@ -26,8 +26,7 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
+      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % "test"
     )
   )
 
@@ -37,8 +36,8 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
   .settings(
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.5.23",
-      "org.mockito" % "mockito-core" % "2.23.0" % "test"
+      "com.typesafe.akka" %% "akka-actor" % "2.5.30",
+      "org.scalatestplus" %% "mockito-3-2" % "3.1.1.0"
     )
   )
   .dependsOn(
@@ -87,7 +86,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
+  crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.1"),
   scalaVersion := "2.11.12",
   skip in publish := true
 )
