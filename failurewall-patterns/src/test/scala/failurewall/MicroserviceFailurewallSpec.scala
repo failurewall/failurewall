@@ -24,7 +24,7 @@ class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
         system.scheduler,
         maxFailures,
         100.seconds,
-        100.seconds,
+        1000.seconds,
         isSuccess.andThen {
           case true => Available
           case false => Unavailable
