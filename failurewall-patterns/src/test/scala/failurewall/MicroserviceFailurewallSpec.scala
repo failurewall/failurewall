@@ -24,7 +24,7 @@ class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
         system.scheduler,
         maxFailures,
         100.seconds,
-        1000.seconds,
+        100.seconds,
         isSuccess.andThen {
           case true => Available
           case false => Unavailable
@@ -111,6 +111,7 @@ class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
         assert(TestHelper.await(actual) === Success(10))
         assert(body.invokedCount === 5)
       }
+      TestHelper.sleep()
 
       {
         val body = BodyPromise[Int]()
