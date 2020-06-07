@@ -98,7 +98,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val isOpen = new AtomicBoolean(false)
         breaker.onOpen(isOpen.set(true))
         val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
-        (1 to failureTimes - 1).foreach { _ =>
+        (1 until failureTimes).foreach { _ =>
           val error = new RuntimeException
           val actual = failurewall.call(Future.failed(error))
           assert(TestHelper.await(actual) === Failure(error))
@@ -113,7 +113,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
           assert(!isOpen.get())
         }
 
-        (1 to failureTimes - 1).foreach { _ =>
+        (1 until failureTimes).foreach { _ =>
           val error = new RuntimeException
           val actual = failurewall.call(Future.failed(error))
           assert(TestHelper.await(actual) === Failure(error))
@@ -147,6 +147,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val breaker = circuitBreaker(maxFailure = 1)
         val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
         TestHelper.await(failurewall.call(Future.failed(new RuntimeException)))
+        TestHelper.sleep()
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
         intercept[FailurewallException] {
