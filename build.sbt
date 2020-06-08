@@ -37,7 +37,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % "2.6.5",
-      "org.scalatestplus" %% "mockito-3-2" % "3.1.2.0"
+      "org.scalatestplus" %% "mockito-3-2" % "3.1.2.0" % "test"
     )
   )
   .dependsOn(
