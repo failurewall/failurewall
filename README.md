@@ -1,7 +1,5 @@
 # Failurewall
 
-[![Build Status](https://travis-ci.org/failurewall/failurewall.svg?branch=master)](https://travis-ci.org/failurewall/failurewall)
-
 This is a library to protect applications against failures, and helpful in developing stable, responsive and resilient systems.
 
 Failurewall is inspired by [Hystrix](https://github.com/Netflix/Hystrix) and adapted for `scala.concurrent.Future`.
