@@ -11,7 +11,7 @@ class StdSemaphoreFailurewallSpec extends WallSpec {
   "StdSemaphoreFailurewall" when {
     "permits are available" should {
       "invoke the given body" in {
-        forAll { result: Int =>
+        forAll { (result: Int) =>
           val semaphore = new Semaphore(3)
           val failurewall = StdSemaphoreFailurewall[Int](semaphore, executor)
           val body = BodyPromise[Int]()

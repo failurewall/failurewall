@@ -18,7 +18,7 @@ class RetryFailurewallSpec extends WallSpec {
 
   "RetryFailurewall" should {
     "throws IllegalArgumentException if `maxTrialTimes` is less than or equal to 0" in {
-      forAll(Gen.chooseNum(Int.MinValue, 0)) { times: Int =>
+      forAll(Gen.chooseNum(Int.MinValue, 0)) { (times: Int) =>
         intercept[IllegalArgumentException] {
           new RetryFailurewall[Int](times, _ => ShouldNotRetry, executor)
         }
@@ -26,7 +26,7 @@ class RetryFailurewallSpec extends WallSpec {
     }
 
     "finish if it succeeds calling body" in {
-      forAll(Gen.chooseNum(1, 10)) { successfulTrial: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (successfulTrial: Int) =>
         val body = new RetriableBody(successfulTrial)
         val failurewall = RetryFailurewall[Int](20, executor)
         val actual = failurewall.call(body.future)
@@ -35,7 +35,7 @@ class RetryFailurewallSpec extends WallSpec {
     }
 
     "retry until it retries max trial times" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val failurewall = RetryFailurewall[Int](times, executor)
         val body = BodyPromise[Int]()
         val error = new RuntimeException
@@ -48,7 +48,7 @@ class RetryFailurewallSpec extends WallSpec {
     }
 
     "fail with the exception if the given body throws a exception" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val failurewall = RetryFailurewall[Int](times, executor)
         val error = new RuntimeException
         val actual = failurewall.call(throw error)
@@ -57,7 +57,7 @@ class RetryFailurewallSpec extends WallSpec {
     }
 
     "retry if feedback returns false" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val failurewall = RetryFailurewall.withFeedback[Int](times, executor) {
           case Success(10) => ShouldRetry
           case Success(_) => ShouldNotRetry

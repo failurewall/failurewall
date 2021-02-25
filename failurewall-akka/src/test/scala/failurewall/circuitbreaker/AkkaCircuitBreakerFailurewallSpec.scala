@@ -20,7 +20,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
   "AkkaCircuitBreakerFailurewall" when {
     "in CLOSED state" should {
       "invoke the given body" in {
-        forAll { result: Int =>
+        forAll { (result: Int) =>
           val breaker = circuitBreaker()
           val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
           val body = BodyPromise[Int]()
@@ -73,7 +73,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
       }
 
       "switch into the OPEN state if too many failures occurs" in {
-        forAll(Gen.chooseNum(1, 10)) { failureTimes: Int =>
+        forAll(Gen.chooseNum(1, 10)) { (failureTimes: Int) =>
           val breaker = circuitBreaker(maxFailure = failureTimes)
           val isOpen = new AtomicBoolean(false)
           breaker.onOpen(isOpen.set(true))

@@ -69,7 +69,7 @@ class BackoffStrategySpec extends WallSpec {
     }
 
     "throws IllegalArgumentException if the given trialTimes <= 0" in {
-      forAll(Gen.choose(Int.MinValue, 0)) { trialTimes: Int =>
+      forAll(Gen.choose(Int.MinValue, 0)) { (trialTimes: Int) =>
         val strategy = ExponentialBackoffStrategy(1.millis, 1.millis)
         intercept[IllegalArgumentException] {
           strategy.nextDelay(trialTimes)
