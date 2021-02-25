@@ -28,7 +28,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
 
   "AkkaRetryFailurewall" should {
     "throws IllegalArgumentException if `maxTrialTimes` is less than or equal to 0" in {
-      forAll(Gen.chooseNum(Int.MinValue, 0)) { maxTrialTimes: Int =>
+      forAll(Gen.chooseNum(Int.MinValue, 0)) { (maxTrialTimes: Int) =>
         intercept[IllegalArgumentException] {
           new AkkaRetryFailurewall[Int](
             maxTrialTimes,
@@ -42,7 +42,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     }
 
     "finish if it succeeds calling body" in {
-      forAll(Gen.chooseNum(1, 10)) { successfulTrial: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (successfulTrial: Int) =>
         val strategy = mockedStrategy()
         val failurewall = AkkaRetryFailurewall[Int](20, strategy, system.scheduler, executor)
 
@@ -57,7 +57,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     }
 
     "retry until it retries max trial times" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
         val failurewall = AkkaRetryFailurewall[Int](times, strategy, system.scheduler, executor)
 
@@ -76,7 +76,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     }
 
     "fail with the exception if the given body throws a exception" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
         val failurewall = AkkaRetryFailurewall[Int](times, strategy, system.scheduler, executor)
 
@@ -91,7 +91,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     }
 
     "retry if feedback returns false" in {
-      forAll(Gen.chooseNum(1, 10)) { times: Int =>
+      forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
         val failurewall = AkkaRetryFailurewall.withFeedback[Int](
           times,
