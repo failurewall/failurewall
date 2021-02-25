@@ -37,7 +37,8 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
   .settings(
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.6.13",
+      // TODO remove for3Use2_13 when akka for Scala 3 released
+      "com.typesafe.akka" %% "akka-actor" % "2.6.13" cross CrossVersion.for3Use2_13,
       "org.scalatestplus" %% "mockito-3-4" % "3.2.5.0" % "test"
     )
   )
@@ -89,7 +90,16 @@ def Scala212 = "2.12.13"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.5"),
+  crossScalaVersions := Seq(Scala212, "2.13.5", "3.0.0-RC1"),
+  Compile / doc / sources := {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        (Compile / doc / sources).value
+      case _ =>
+        // disable if Scala 3
+        Nil
+    }
+  },
   scalaVersion := Scala212,
   publish / skip := true
 )
