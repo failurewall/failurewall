@@ -36,7 +36,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
   .settings(
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.6.5",
+      "com.typesafe.akka" %% "akka-actor" % "2.6.13",
       "org.scalatestplus" %% "mockito-3-2" % "3.1.2.0" % "test"
     )
   )
