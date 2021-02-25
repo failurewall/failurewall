@@ -26,7 +26,7 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
-      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.2.0" % "test"
+      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.4.0" % "test"
     )
   )
 
