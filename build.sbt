@@ -12,7 +12,7 @@ inThisBuild(List(
   )
 ))
 
-skip in publish := true
+publish / skip := true
 
 lazy val root = (project in file("."))
   .settings(
@@ -79,7 +79,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
     testFrameworks ++= Seq(
       new TestFramework("org.scalameter.ScalaMeterFramework")
     ),
-    parallelExecution in Test := false
+    Test / parallelExecution := false
   )
   .dependsOn(
     failurewallAkka
@@ -91,9 +91,9 @@ lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
   crossScalaVersions := Seq(Scala212, "2.13.5"),
   scalaVersion := Scala212,
-  skip in publish := true
+  publish / skip := true
 )
 
 lazy val publishSettings = Seq(
-  skip in publish := false
+  publish / skip := false
 )
