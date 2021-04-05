@@ -26,8 +26,8 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest-wordspec" % "3.2.6" % "test",
-      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.6.0" % "test"
+      "org.scalatest" %% "scalatest-wordspec" % "3.2.7" % "test",
+      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.7.0" % "test"
     )
   )
 
@@ -39,7 +39,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
     libraryDependencies ++= Seq(
       // TODO remove for3Use2_13 when akka for Scala 3 released
       "com.typesafe.akka" %% "akka-actor" % "2.6.13" cross CrossVersion.for3Use2_13,
-      "org.scalatestplus" %% "mockito-3-4" % "3.2.6.0" % "test"
+      "org.scalatestplus" %% "mockito-3-4" % "3.2.7.0" % "test"
     )
   )
   .dependsOn(
@@ -90,7 +90,7 @@ def Scala212 = "2.12.13"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.5", "3.0.0-RC1"),
+  crossScalaVersions := Seq(Scala212, "2.13.5", "3.0.0-RC2"),
   Compile / doc / sources := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
