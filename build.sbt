@@ -27,7 +27,7 @@ lazy val failurewallCore = (project in file("failurewall-core"))
     name := "failurewall-core",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest-wordspec" % "3.2.10" % "test",
-      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.9.0" % "test"
+      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.10.0" % "test"
     )
   )
 
@@ -39,7 +39,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
     libraryDependencies ++= Seq(
       // TODO remove for3Use2_13 when akka for Scala 3 released
       "com.typesafe.akka" %% "akka-actor" % "2.6.16" cross CrossVersion.for3Use2_13,
-      "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % "test"
+      "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test"
     )
   )
   .dependsOn(
