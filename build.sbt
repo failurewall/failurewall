@@ -37,8 +37,7 @@ lazy val failurewallAkka = (project in file("failurewall-akka"))
   .settings(
     name := "failurewall-akka",
     libraryDependencies ++= Seq(
-      // TODO remove for3Use2_13 when akka for Scala 3 released
-      "com.typesafe.akka" %% "akka-actor" % "2.6.18" cross CrossVersion.for3Use2_13,
+      "com.typesafe.akka" %% "akka-actor" % "2.6.18",
       "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test"
     )
   )
