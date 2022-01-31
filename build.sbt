@@ -89,7 +89,7 @@ def Scala212 = "2.12.15"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.8", "3.1.0"),
+  crossScalaVersions := Seq(Scala212, "2.13.8", "3.1.1"),
   Compile / doc / sources := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
