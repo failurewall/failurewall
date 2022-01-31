@@ -26,7 +26,7 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest-wordspec" % "3.2.10" % "test",
+      "org.scalatest" %% "scalatest-wordspec" % "3.2.11" % "test",
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test"
     )
   )
@@ -89,7 +89,7 @@ def Scala212 = "2.12.15"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.7", "3.1.0"),
+  crossScalaVersions := Seq(Scala212, "2.13.8", "3.1.1"),
   Compile / doc / sources := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
