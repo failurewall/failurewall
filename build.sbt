@@ -26,7 +26,7 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest-wordspec" % "3.2.11" % "test",
+      "org.scalatest" %% "scalatest-wordspec" % "3.2.13" % "test",
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test"
     )
   )
@@ -85,11 +85,11 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
     failurewallAkka
   )
 
-def Scala212 = "2.12.15"
+def Scala212 = "2.12.17"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.8", "3.1.2"),
+  crossScalaVersions := Seq(Scala212, "2.13.9", "3.1.3"),
   Compile / doc / sources := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
