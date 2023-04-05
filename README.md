@@ -9,7 +9,7 @@ Failurewall is inspired by [Hystrix](https://github.com/Netflix/Hystrix) and ada
 You should add the following dependency.
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-core" % "0.4.0"
+libraryDependencies += "com.okumin" %% "failurewall-core" % "0.5.0"
 ```
 
 If you are using Akka 2.4, you can use `failurewall-akka`.
@@ -20,7 +20,7 @@ If you are using Akka 2.4, you can use `failurewall-akka`.
 - timeout
 
 ```
-libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.4.0"
+libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.5.0"
 ```
 
 If you are using Akka 2.3, see also [failurewall-akka23](https://github.com/failurewall/failurewall-akka23).
