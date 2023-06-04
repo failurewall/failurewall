@@ -85,11 +85,11 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
     failurewallAkka
   )
 
-def Scala212 = "2.12.17"
+def Scala212 = "2.12.18"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
-  crossScalaVersions := Seq(Scala212, "2.13.10", "3.2.2"),
+  crossScalaVersions := Seq(Scala212, "2.13.11", "3.2.2"),
   Compile / doc / sources := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
