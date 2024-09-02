@@ -85,7 +85,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
     failurewallAkka
   )
 
-def Scala212 = "2.12.19"
+def Scala212 = "2.12.20"
 
 lazy val basicSettings = Seq(
   scalacOptions ++= Seq("-deprecation"),
