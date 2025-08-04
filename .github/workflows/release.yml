@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    branches: [master]
+    branches: [main]
     tags: ["*"]
 jobs:
   publish:
@@ -14,6 +14,7 @@ jobs:
         with:
           java-version: 8
           distribution: adopt
+      - uses: sbt/setup-sbt@v1
       - run: sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}

@@ -56,7 +56,7 @@ val walls: [Double, String] = wallSina compose wallRose compose wallMaria
 
 ## Built-in walls(failurewall-core)
 
-### [RetryFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/retry/RetryFailurewall.scala)
+### [RetryFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-core/src/main/scala/failurewall/retry/RetryFailurewall.scala)
 
 Retries on temporary failures.
 
@@ -65,7 +65,7 @@ val wall = RetryFailurewall[Response](10, executionContext)
 wall.call(Future.failed(new RuntimeException)) // retry 10 times
 ```
 
-### [StdSemaphoreFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/semaphore/StdSemaphoreFailurewall.scala)
+### [StdSemaphoreFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-core/src/main/scala/failurewall/semaphore/StdSemaphoreFailurewall.scala)
 
 Keeps resource usage constant.
 
@@ -77,7 +77,7 @@ val results = (1 to 100).map { _ =>
 }
 ```
 
-### [StopwatchFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-core/src/main/scala/failurewall/stopwatch/StopwatchFailurewall.scala)
+### [StopwatchFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-core/src/main/scala/failurewall/stopwatch/StopwatchFailurewall.scala)
 
 Measures the execution time.
 
@@ -88,7 +88,7 @@ wall.call(doSomeOperation()) // returns Future[(Try[Response], FiniteDuration)]
 
 ## Built-in walls(failurewall-akka)
 
-### [AkkaCircuitBreakerFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/circuitbreaker/AkkaCircuitBreakerFailurewall.scala)
+### [AkkaCircuitBreakerFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/circuitbreaker/AkkaCircuitBreakerFailurewall.scala)
 
 Prevents a failure from leading to cascading other failures.
 
@@ -103,7 +103,7 @@ val results = (1 to 100).map { _ =>
 }
 ```
 
-### [AkkaRetryFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/retry/AkkaRetryFailurewall.scala)
+### [AkkaRetryFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/retry/AkkaRetryFailurewall.scala)
 
 Retries with backoff on temporary failures.
 
@@ -123,7 +123,7 @@ val wall = AkkaRetryFailurewall[Response](
 wall.call(Future.failed(new RuntimeException))
 ```
 
-### [AkkaTimeoutFailurewall](https://github.com/failurewall/failurewall/blob/master/failurewall-akka/src/main/scala/failurewall/timeout/AkkaTimeoutFailurewall.scala)
+### [AkkaTimeoutFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/timeout/AkkaTimeoutFailurewall.scala)
 
 Times out when it takes some duration.
 
