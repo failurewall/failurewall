@@ -1,9 +1,11 @@
 name: CI
 on:
   pull_request:
+    branches:
+      - main
   push:
-  schedule:
-  - cron: '0 4 * * *'
+    branches: [main]
+    tags: ["*"]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,5 +22,6 @@ jobs:
       with:
         java-version: "${{ matrix.java }}"
         distribution: adopt
+    - uses: sbt/setup-sbt@v1
     - uses: coursier/cache-action@v6
     - run: sbt -v "+ test"
