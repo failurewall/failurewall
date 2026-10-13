@@ -17,7 +17,7 @@ import scala.util.{Failure, Success, Try}
  */
 final class RetryFailurewall[A](maxTrialTimes: Int,
                                 feedback: Try[A] => RetryFeedback,
-                                implicit private[this] val executor: ExecutionContext)
+                                implicit private val executor: ExecutionContext)
   extends Failurewall[A, A] {
 
   require(maxTrialTimes > 0, "`maxTrialTimes` should be greater than 0.")

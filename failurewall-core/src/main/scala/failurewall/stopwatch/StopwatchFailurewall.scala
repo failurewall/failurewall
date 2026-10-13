@@ -11,7 +11,7 @@ import scala.util.Try
  *
  * @param executor ExecutionContext
  */
-final class StopwatchFailurewall[A](implicit private[this] val executor: ExecutionContext)
+final class StopwatchFailurewall[A](implicit private val executor: ExecutionContext)
   extends Failurewall[A, (Try[A], FiniteDuration)] {
   /**
    * Measures the execution time of the given `body`.
@@ -35,6 +35,7 @@ object StopwatchFailurewall {
    * @param executor ExecutionContext for [[StopwatchFailurewall]]
    */
   def apply[A](executor: ExecutionContext): StopwatchFailurewall[A] = {
-    new StopwatchFailurewall[A]()(executor)
+    implicit val executionContext: ExecutionContext = executor
+    new StopwatchFailurewall[A]
   }
 }

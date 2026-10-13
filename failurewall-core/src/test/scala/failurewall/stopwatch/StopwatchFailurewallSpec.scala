@@ -9,21 +9,21 @@ class StopwatchFailurewallSpec extends WallSpec {
     "measure the execution time" when {
       "the given body succeeds" in {
         val failurewall = StopwatchFailurewall[Int](executor)
-        val Success((actual, _)) = TestHelper.await(failurewall.call(Future(10)))
+        val (actual, _) = TestHelper.await(failurewall.call(Future(10))).get
         assert(actual === Success(10))
       }
 
       "the given body fails" in {
         val failurewall = StopwatchFailurewall[Int](executor)
         val error = new RuntimeException
-        val Success((actual, _)) = TestHelper.await(failurewall.call(Future(throw error)))
+        val (actual, _) = TestHelper.await(failurewall.call(Future(throw error))).get
         assert(actual === Failure(error))
       }
 
       "the given body throws an Exception" in {
         val failurewall = StopwatchFailurewall[Int](executor)
         val error = new RuntimeException
-        val Success((actual, _)) = TestHelper.await(failurewall.call(throw error))
+        val (actual, _) = TestHelper.await(failurewall.call(throw error)).get
         assert(actual === Failure(error))
       }
     }

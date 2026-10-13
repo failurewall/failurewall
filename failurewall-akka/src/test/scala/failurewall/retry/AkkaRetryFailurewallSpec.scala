@@ -11,8 +11,8 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
-  private[this] class RetriableBody(successfulTrial: Int) {
-    private[this] val n = new AtomicInteger(0)
+  private class RetriableBody(successfulTrial: Int) {
+    private val n = new AtomicInteger(0)
 
     def future: Future[Int] = n.incrementAndGet() match {
       case `successfulTrial` => Future.successful(successfulTrial)
@@ -20,7 +20,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     }
   }
 
-  private[this] def mockedStrategy(duration: FiniteDuration = 0.millis): BackoffStrategy = {
+  private def mockedStrategy(duration: FiniteDuration = 0.millis): BackoffStrategy = {
     val strategy = mock[BackoffStrategy]
     when(strategy.nextDelay(any[Int])).thenReturn(duration)
     strategy

@@ -73,6 +73,6 @@ object MicroserviceFailurewall {
       retryConfig.maxTrialTimes,
       executor
     )(retryConfig.feedback)
-    circuitBreaker compose semaphore compose retry
+    circuitBreaker.compose(semaphore).compose(retry)
   }
 }

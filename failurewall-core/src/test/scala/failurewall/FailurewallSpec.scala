@@ -17,7 +17,7 @@ class FailurewallSpec extends WallSpec {
         override def call(body: => Future[Double]): Future[Int] = body.map(_.toInt)
       }
 
-      val failurewall = wallSina compose wallRose compose wallMaria
+      val failurewall = wallSina.compose(wallRose).compose(wallMaria)
       val actual = failurewall.call(Future(33.4))
       assert(TestHelper.await(actual) === Success("-33"))
     }

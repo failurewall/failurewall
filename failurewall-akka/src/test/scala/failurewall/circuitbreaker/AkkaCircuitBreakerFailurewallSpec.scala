@@ -11,9 +11,9 @@ import scala.util.{Failure, Success}
 
 class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
-  private[this] def circuitBreaker(maxFailure: Int = 3,
-                                   callTimeout: FiniteDuration = 10.seconds,
-                                   resetTimeout: FiniteDuration = 100.seconds): CircuitBreaker = {
+  private def circuitBreaker(maxFailure: Int = 3,
+                             callTimeout: FiniteDuration = 10.seconds,
+                             resetTimeout: FiniteDuration = 100.seconds): CircuitBreaker = {
     CircuitBreaker(system.scheduler, maxFailure, callTimeout, resetTimeout)
   }
 

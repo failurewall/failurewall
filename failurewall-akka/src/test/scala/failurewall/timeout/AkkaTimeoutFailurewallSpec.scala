@@ -42,7 +42,7 @@ class AkkaTimeoutFailurewallSpec extends AkkaSpec {
         counter.incrementAndGet()
       }
 
-      val Failure(error) = TestHelper.await(failurewall.call(Promise[Int]().future))
+      val error = TestHelper.await(failurewall.call(Promise[Int]().future)).failed.get
       assert(error.isInstanceOf[FailurewallException])
       TestHelper.sleep()
       assert(counter.get() === 1)
