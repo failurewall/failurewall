@@ -6,7 +6,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scala.concurrent.ExecutionContext
 
 trait WallSpec extends AnyWordSpec with ScalaCheckDrivenPropertyChecks {
-  implicit protected[this] def executor: ExecutionContext = WallSpec.executor
+  implicit protected def executor: ExecutionContext = WallSpec.executor
 }
 
 object WallSpec {

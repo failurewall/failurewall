@@ -7,8 +7,8 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 class RetryFailurewallSpec extends WallSpec {
-  private[this] class RetriableBody(successfulTrial: Int) {
-    private[this] val n = new AtomicInteger(0)
+  private class RetriableBody(successfulTrial: Int) {
+    private val n = new AtomicInteger(0)
 
     def future: Future[Int] = n.incrementAndGet() match {
       case `successfulTrial` => Future.successful(successfulTrial)

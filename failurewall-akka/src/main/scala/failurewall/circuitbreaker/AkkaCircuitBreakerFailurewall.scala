@@ -41,7 +41,7 @@ import scala.util.{Failure, Success, Try}
  */
 final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
                                              feedback: Try[A] => CircuitBreakerFeedback,
-                                             implicit private[this] val executor: ExecutionContext)
+                                             implicit private val executor: ExecutionContext)
   extends Failurewall[A, A] {
 
   /**

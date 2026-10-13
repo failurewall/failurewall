@@ -5,8 +5,8 @@ import scala.concurrent.{Future, Promise}
 import scala.util.Try
 
 class BodyPromise[A] extends Promise[A] {
-  private[this] val promise = Promise[A]()
-  private[this] val counter = new AtomicInteger(0)
+  private val promise = Promise[A]()
+  private val counter = new AtomicInteger(0)
 
   override def future: Future[A] = {
     counter.incrementAndGet()

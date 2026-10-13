@@ -21,7 +21,7 @@ class BackoffStrategySpec extends WallSpec {
       ExponentialBackoffStrategy(1.millis, 1.millis, 1.0, 0.0)
 
       intercept[IllegalArgumentException] {
-        ExponentialBackoffStrategy(-1.millis, 1.millis, 1.0, 0.0)
+        ExponentialBackoffStrategy((-1).millis, 1.millis, 1.0, 0.0)
       }
       intercept[IllegalArgumentException] {
         ExponentialBackoffStrategy(2.millis, 1.millis, 1.0, 0.0)

@@ -30,7 +30,7 @@ trait Failurewall[A, B] {
 }
 
 object Failurewall {
-  private[this] final class NopFailurewall[A] extends Failurewall[A, A] {
+  private final class NopFailurewall[A] extends Failurewall[A, A] {
     override def call(body: => Future[A]): Future[A] = body
   }
 

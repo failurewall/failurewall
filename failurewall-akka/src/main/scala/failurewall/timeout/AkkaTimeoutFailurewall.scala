@@ -25,7 +25,7 @@ import scala.util.Failure
 final class AkkaTimeoutFailurewall[A](duration: FiniteDuration,
                                       scheduler: Scheduler,
                                       onTimeout: => Unit,
-                                      implicit private[this] val executor: ExecutionContext)
+                                      implicit private val executor: ExecutionContext)
   extends Failurewall[A, A] {
 
   /**

@@ -11,14 +11,14 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
 class MicroserviceFailurewallSpec extends WallSpec with BeforeAndAfterAll {
-  private[this] val system = ActorSystem("microservice-failurewall")
+  private val system = ActorSystem("microservice-failurewall")
 
   override protected def afterAll(): Unit = TestHelper.await(system.terminate())
 
-  private[this] def create[A](maxFailures: Int = 5,
-                              permits: Int = 5,
-                              maxTrialTimes: Int = 5)
-                             (isSuccess: Try[A] => Boolean): Failurewall[A, A] = {
+  private def create[A](maxFailures: Int = 5,
+                        permits: Int = 5,
+                        maxTrialTimes: Int = 5)
+                       (isSuccess: Try[A] => Boolean): Failurewall[A, A] = {
     MicroserviceFailurewall[A](
       CircuitBreakerConfig(
         system.scheduler,
