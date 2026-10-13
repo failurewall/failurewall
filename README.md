@@ -12,18 +12,24 @@ You should add the following dependency.
 libraryDependencies += "com.okumin" %% "failurewall-core" % "0.5.0"
 ```
 
-If you are using Akka 2.4, you can use `failurewall-akka`.
-`failurewall-akka` provides the following failurewalls.
+For applications using Apache Pekko, `failurewall-pekko` provides the following failurewalls.
 
 - circuit breaker
 - retry with backoff
 - timeout
 
-```
-libraryDependencies += "com.okumin" %% "failurewall-akka" % "0.5.0"
+To use the Pekko module from this checkout, publish it and its core dependency locally:
+
+```sh
+sbt "show failurewallPekko / version" publishLocal
 ```
 
-If you are using Akka 2.3, see also [failurewall-akka23](https://github.com/failurewall/failurewall-akka23).
+The command publishes for the build's default Scala version. If your application uses a different Scala version, select it with `++<scala-version>` before running these commands.
+Use the version printed by sbt in your application's build:
+
+```scala
+libraryDependencies += "com.okumin" %% "failurewall-pekko" % "<version printed by sbt>"
+```
 
 ## How to use
 
@@ -86,15 +92,21 @@ val wall = StopwatchFailurewall[Response](executionContext)
 wall.call(doSomeOperation()) // returns Future[(Try[Response], FiniteDuration)]
 ```
 
-## Built-in walls(failurewall-akka)
+## Built-in walls(failurewall-pekko)
 
-### [AkkaCircuitBreakerFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/circuitbreaker/AkkaCircuitBreakerFailurewall.scala)
+These walls use Apache Pekko's scheduler, obtained from your actor system:
+
+```scala
+val pekkoScheduler: org.apache.pekko.actor.Scheduler = actorSystem.scheduler
+```
+
+### [PekkoCircuitBreakerFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-pekko/src/main/scala/failurewall/circuitbreaker/PekkoCircuitBreakerFailurewall.scala)
 
 Prevents a failure from leading to cascading other failures.
 
 ```scala
 // has a little complicated constructor
-val wall: AkkaCircuitBreakerFailurewall[Response] = ???
+val wall: PekkoCircuitBreakerFailurewall[Response] = ???
 val results = (1 to 100).map { _ =>
   // fail-fast after failure times exceeds the threshold
   wall.call(Future {
@@ -103,7 +115,7 @@ val results = (1 to 100).map { _ =>
 }
 ```
 
-### [AkkaRetryFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/retry/AkkaRetryFailurewall.scala)
+### [PekkoRetryFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-pekko/src/main/scala/failurewall/retry/PekkoRetryFailurewall.scala)
 
 Retries with backoff on temporary failures.
 
@@ -113,22 +125,22 @@ val backoffStrategy = ExponentialBackoffStrategy(
   maxBackoff = 10.seconds,
   multiplier = 2.0
 )
-val wall = AkkaRetryFailurewall[Response](
+val wall = PekkoRetryFailurewall[Response](
   10,
   backoffStrategy,
-  akkaScheduler,
+  pekkoScheduler,
   executionContext
 )
 // retry 10 times with exponential backoff
 wall.call(Future.failed(new RuntimeException))
 ```
 
-### [AkkaTimeoutFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-akka/src/main/scala/failurewall/timeout/AkkaTimeoutFailurewall.scala)
+### [PekkoTimeoutFailurewall](https://github.com/failurewall/failurewall/blob/main/failurewall-pekko/src/main/scala/failurewall/timeout/PekkoTimeoutFailurewall.scala)
 
 Times out when it takes some duration.
 
 ```scala
-val wall = AkkaTimeoutFailurewall[String](5.seconds, akkaScheduler, executionContext) {
+val wall = PekkoTimeoutFailurewall[String](5.seconds, pekkoScheduler, executionContext) {
   logger.error("Timed out.")
 }
 // fails with FailurewallException

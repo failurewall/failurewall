@@ -1,7 +1,7 @@
 package failurewall.circuitbreaker
 
-import akka.actor.Scheduler
-import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException}
+import org.apache.pekko.actor.Scheduler
+import org.apache.pekko.pattern.{CircuitBreaker, CircuitBreakerOpenException}
 import failurewall.util.FailurewallHelper
 import failurewall.{Failurewall, FailurewallException}
 import scala.concurrent.duration.FiniteDuration
@@ -9,8 +9,8 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success, Try}
 
 /**
- * A circuit breaker with [[Failurewall]]'s interface implemented by Akka's [[CircuitBreaker]].
- * Calls wrapped in [[AkkaCircuitBreakerFailurewall]] are protected by circuit breaker mechanisms.
+ * A circuit breaker with [[Failurewall]]'s interface implemented by Pekko's [[CircuitBreaker]].
+ * Calls wrapped in [[PekkoCircuitBreakerFailurewall]] are protected by circuit breaker mechanisms.
  * A circuit breaker prevents a failure form cascading any other failures.
  *
  * A circuit breaker is a state machine that has a following state.
@@ -35,11 +35,11 @@ import scala.util.{Failure, Success, Try}
  * If the first call succeeds, the circuit breaker switches to `CLOSED` state.
  * If the first call fails, the circuit breaker switches to `OPEN` state.
  *
- * @param circuitBreaker Akka's CircuitBreaker
+ * @param circuitBreaker Pekko's CircuitBreaker
  * @param feedback feedback logic to test the result
  * @param executor ExecutionContext
  */
-final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
+final class PekkoCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
                                              feedback: Try[A] => CircuitBreakerFeedback,
                                              implicit private val executor: ExecutionContext)
   extends Failurewall[A, A] {
@@ -71,16 +71,16 @@ final class AkkaCircuitBreakerFailurewall[A](circuitBreaker: CircuitBreaker,
   }
 }
 
-object AkkaCircuitBreakerFailurewall {
+object PekkoCircuitBreakerFailurewall {
   /**
-   * Creates [[AkkaCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
-   * The created [[AkkaCircuitBreakerFailurewall]] considers a call as successful
+   * Creates [[PekkoCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
+   * The created [[PekkoCircuitBreakerFailurewall]] considers a call as successful
    * if it is a successful future.
-   * @param circuitBreaker circuit breaker for [[AkkaCircuitBreakerFailurewall]]
-   * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
+   * @param circuitBreaker circuit breaker for [[PekkoCircuitBreakerFailurewall]]
+   * @param executor ExecutionContext for [[PekkoCircuitBreakerFailurewall]]
    */
   def apply[A](circuitBreaker: CircuitBreaker,
-               executor: ExecutionContext): AkkaCircuitBreakerFailurewall[A] = {
+               executor: ExecutionContext): PekkoCircuitBreakerFailurewall[A] = {
     withFeedback[A](circuitBreaker, executor) {
       case Success(_) => Available
       case Failure(_) => Unavailable
@@ -88,20 +88,20 @@ object AkkaCircuitBreakerFailurewall {
   }
 
   /**
-   * Creates [[AkkaCircuitBreakerFailurewall]] with the given parameters.
-   * The created [[AkkaCircuitBreakerFailurewall]] considers a call as successful
+   * Creates [[PekkoCircuitBreakerFailurewall]] with the given parameters.
+   * The created [[PekkoCircuitBreakerFailurewall]] considers a call as successful
    * if it is a successful future.
    * @param scheduler scheduler used in the circuit breaker
    * @param maxFailures allowable failure times
    * @param callTimeout timeout for invoking a call
    * @param resetTimeout timeout for a attempt to return to the CLOSED state.
-   * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
+   * @param executor ExecutionContext for [[PekkoCircuitBreakerFailurewall]]
    */
   def apply[A](scheduler: Scheduler,
                maxFailures: Int,
                callTimeout: FiniteDuration,
                resetTimeout: FiniteDuration,
-               executor: ExecutionContext): AkkaCircuitBreakerFailurewall[A] = {
+               executor: ExecutionContext): PekkoCircuitBreakerFailurewall[A] = {
     withFeedback[A](scheduler, maxFailures, callTimeout, resetTimeout, executor) {
       case Success(_) => Available
       case Failure(_) => Unavailable
@@ -109,23 +109,23 @@ object AkkaCircuitBreakerFailurewall {
   }
 
   /**
-   * Creates [[AkkaCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
-   * @param circuitBreaker circuit breaker for [[AkkaCircuitBreakerFailurewall]]
-   * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
+   * Creates [[PekkoCircuitBreakerFailurewall]] with the given [[CircuitBreaker]].
+   * @param circuitBreaker circuit breaker for [[PekkoCircuitBreakerFailurewall]]
+   * @param executor ExecutionContext for [[PekkoCircuitBreakerFailurewall]]
    * @param feedback the logic to test whether a call is successful or not
    */
   def withFeedback[A](circuitBreaker: CircuitBreaker, executor: ExecutionContext)
-                     (feedback: Try[A] => CircuitBreakerFeedback): AkkaCircuitBreakerFailurewall[A] = {
-    new AkkaCircuitBreakerFailurewall[A](circuitBreaker, feedback, executor)
+                     (feedback: Try[A] => CircuitBreakerFeedback): PekkoCircuitBreakerFailurewall[A] = {
+    new PekkoCircuitBreakerFailurewall[A](circuitBreaker, feedback, executor)
   }
 
   /**
-   * Creates [[AkkaCircuitBreakerFailurewall]] with the given parameters.
+   * Creates [[PekkoCircuitBreakerFailurewall]] with the given parameters.
    * @param scheduler scheduler used in the circuit breaker
    * @param maxFailures allowable failure times
    * @param callTimeout timeout for invoking a call
    * @param resetTimeout timeout for a attempt to return to the CLOSED state.
-   * @param executor ExecutionContext for [[AkkaCircuitBreakerFailurewall]]
+   * @param executor ExecutionContext for [[PekkoCircuitBreakerFailurewall]]
    * @param feedback the logic to test whether a call is successful or not
    */
   def withFeedback[A](scheduler: Scheduler,
@@ -133,7 +133,7 @@ object AkkaCircuitBreakerFailurewall {
                       callTimeout: FiniteDuration,
                       resetTimeout: FiniteDuration,
                       executor: ExecutionContext)
-                     (feedback: Try[A] => CircuitBreakerFeedback): AkkaCircuitBreakerFailurewall[A] = {
+                     (feedback: Try[A] => CircuitBreakerFeedback): PekkoCircuitBreakerFailurewall[A] = {
     val circuitBreaker = CircuitBreaker(scheduler, maxFailures, callTimeout, resetTimeout)
     withFeedback[A](circuitBreaker, executor)(feedback)
   }

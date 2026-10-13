@@ -1,7 +1,7 @@
 package failurewall
 
-import akka.actor.Scheduler
-import failurewall.circuitbreaker.{AkkaCircuitBreakerFailurewall, CircuitBreakerFeedback}
+import org.apache.pekko.actor.Scheduler
+import failurewall.circuitbreaker.{PekkoCircuitBreakerFailurewall, CircuitBreakerFeedback}
 import failurewall.retry.{RetryFailurewall, RetryFeedback}
 import failurewall.semaphore.StdSemaphoreFailurewall
 import scala.concurrent.ExecutionContext
@@ -61,7 +61,7 @@ object MicroserviceFailurewall {
                semaphoreConfig: SemaphoreConfig,
                retryConfig: RetryConfig[A],
                executor: ExecutionContext): Failurewall[A, A] = {
-    val circuitBreaker = AkkaCircuitBreakerFailurewall.withFeedback[A](
+    val circuitBreaker = PekkoCircuitBreakerFailurewall.withFeedback[A](
       circuitBreakerConfig.scheduler,
       circuitBreakerConfig.maxFailures,
       circuitBreakerConfig.callTimeout,

@@ -1,6 +1,6 @@
 package failurewall
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import failurewall.MicroserviceFailurewall.{CircuitBreakerConfig, RetryConfig, SemaphoreConfig}
 import failurewall.circuitbreaker.{Available, Unavailable}
 import failurewall.retry.{ShouldNotRetry, ShouldRetry}

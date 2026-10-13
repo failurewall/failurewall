@@ -1,6 +1,6 @@
 package failurewall.test
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
@@ -9,6 +9,6 @@ object Scheduler {
 
   def after[A](duration: FiniteDuration)(value: => A): Future[A] = {
     import system.dispatcher
-    akka.pattern.after(duration, system.scheduler)(Future(value))
+    org.apache.pekko.pattern.after(duration, system.scheduler)(Future(value))
   }
 }

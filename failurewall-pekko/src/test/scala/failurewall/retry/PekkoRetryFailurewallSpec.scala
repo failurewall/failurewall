@@ -1,6 +1,6 @@
 package failurewall.retry
 
-import failurewall.test.{AkkaSpec, BodyPromise, TestHelper}
+import failurewall.test.{PekkoSpec, BodyPromise, TestHelper}
 import java.util.concurrent.atomic.AtomicInteger
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
+class PekkoRetryFailurewallSpec extends PekkoSpec with MockitoSugar {
   private class RetriableBody(successfulTrial: Int) {
     private val n = new AtomicInteger(0)
 
@@ -26,11 +26,11 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     strategy
   }
 
-  "AkkaRetryFailurewall" should {
+  "PekkoRetryFailurewall" should {
     "throws IllegalArgumentException if `maxTrialTimes` is less than or equal to 0" in {
       forAll(Gen.chooseNum(Int.MinValue, 0)) { (maxTrialTimes: Int) =>
         intercept[IllegalArgumentException] {
-          new AkkaRetryFailurewall[Int](
+          new PekkoRetryFailurewall[Int](
             maxTrialTimes,
             ConstantBackoffStrategy(1.milli),
             system.scheduler,
@@ -44,7 +44,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     "finish if it succeeds calling body" in {
       forAll(Gen.chooseNum(1, 10)) { (successfulTrial: Int) =>
         val strategy = mockedStrategy()
-        val failurewall = AkkaRetryFailurewall[Int](20, strategy, system.scheduler, executor)
+        val failurewall = PekkoRetryFailurewall[Int](20, strategy, system.scheduler, executor)
 
         val body = new RetriableBody(successfulTrial)
         val actual = failurewall.call(body.future)
@@ -59,7 +59,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     "retry until it retries max trial times" in {
       forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
-        val failurewall = AkkaRetryFailurewall[Int](times, strategy, system.scheduler, executor)
+        val failurewall = PekkoRetryFailurewall[Int](times, strategy, system.scheduler, executor)
 
         val body = BodyPromise[Int]()
         val error = new RuntimeException
@@ -78,7 +78,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     "fail with the exception if the given body throws a exception" in {
       forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
-        val failurewall = AkkaRetryFailurewall[Int](times, strategy, system.scheduler, executor)
+        val failurewall = PekkoRetryFailurewall[Int](times, strategy, system.scheduler, executor)
 
         val error = new RuntimeException
         val actual = failurewall.call(throw error)
@@ -93,7 +93,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
     "retry if feedback returns false" in {
       forAll(Gen.chooseNum(1, 10)) { (times: Int) =>
         val strategy = mockedStrategy()
-        val failurewall = AkkaRetryFailurewall.withFeedback[Int](
+        val failurewall = PekkoRetryFailurewall.withFeedback[Int](
           times,
           strategy,
           system.scheduler,
@@ -119,7 +119,7 @@ class AkkaRetryFailurewallSpec extends AkkaSpec with MockitoSugar {
       val start = System.currentTimeMillis()
 
       val strategy = mockedStrategy(200.millis)
-      val failurewall = AkkaRetryFailurewall[Int](5, strategy, system.scheduler, executor)
+      val failurewall = PekkoRetryFailurewall[Int](5, strategy, system.scheduler, executor)
 
       val body = BodyPromise[Int]()
       val error = new RuntimeException

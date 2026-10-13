@@ -1,6 +1,6 @@
 package failurewall.test
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 
 trait ActorSystemSetup {
   def system: ActorSystem = ActorSystemSetup.system

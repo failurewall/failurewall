@@ -1,6 +1,6 @@
 package failurewall.timeout
 
-import akka.actor.Scheduler
+import org.apache.pekko.actor.Scheduler
 import failurewall.util.FailurewallHelper
 import failurewall.{Failurewall, FailurewallException}
 import scala.concurrent.duration.FiniteDuration
@@ -14,15 +14,15 @@ import scala.util.Failure
  * @param scheduler scheduler
  * @param onTimeout a call to be executed on timeout
  * @param executor ExecutionContext
- * @note The accuracy of timeout duration depends on Akka's [[Scheduler]].
- * @note AkkaTimeoutFailurewall almost ensures that calls will be completed within the time limit.
+ * @note The accuracy of timeout duration depends on Pekko's [[Scheduler]].
+ * @note PekkoTimeoutFailurewall almost ensures that calls will be completed within the time limit.
  *       However, that does not mean that calls are stopped or shut down.
- *       For instance, if [[AkkaTimeoutFailurewall]] wraps a http call and times out,
+ *       For instance, if [[PekkoTimeoutFailurewall]] wraps a http call and times out,
  *       the returned [[Future]] is completed but the http call is not cancelled and
  *       it is possible that the TCP connection leaks.
  *       Define `onTimeout` callback if necessary.
  */
-final class AkkaTimeoutFailurewall[A](duration: FiniteDuration,
+final class PekkoTimeoutFailurewall[A](duration: FiniteDuration,
                                       scheduler: Scheduler,
                                       onTimeout: => Unit,
                                       implicit private val executor: ExecutionContext)
@@ -47,22 +47,22 @@ final class AkkaTimeoutFailurewall[A](duration: FiniteDuration,
   }
 }
 
-object AkkaTimeoutFailurewall {
+object PekkoTimeoutFailurewall {
   /**
-   * Creates [[AkkaTimeoutFailurewall]].
+   * Creates [[PekkoTimeoutFailurewall]].
    * @param duration duration for timeouts
    * @param scheduler scheduler
-   * @param executor ExecutionContext for [[AkkaTimeoutFailurewall]]
+   * @param executor ExecutionContext for [[PekkoTimeoutFailurewall]]
    * @param onTimeout a call to be executed on timeout
-   * @note AkkaTimeoutFailurewall almost ensures that calls will be completed within the time limit.
+   * @note PekkoTimeoutFailurewall almost ensures that calls will be completed within the time limit.
    *       However, that does not mean that calls are stopped or shut down.
-   *       For instance, if [[AkkaTimeoutFailurewall]] wraps a http call and times out,
+   *       For instance, if [[PekkoTimeoutFailurewall]] wraps a http call and times out,
    *       the [[Future]] is completed but the http call is not cancelled and
    *       it is possible that the TCP connection leaks.
    *       Define `onTimeout` callback if necessary.
    */
   def apply[A](duration: FiniteDuration, scheduler: Scheduler, executor: ExecutionContext)
-              (onTimeout: => Unit): AkkaTimeoutFailurewall[A] = {
-    new AkkaTimeoutFailurewall[A](duration, scheduler, onTimeout, executor)
+              (onTimeout: => Unit): PekkoTimeoutFailurewall[A] = {
+    new PekkoTimeoutFailurewall[A](duration, scheduler, onTimeout, executor)
   }
 }

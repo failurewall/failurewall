@@ -1,15 +1,15 @@
 package failurewall.circuitbreaker
 
-import akka.pattern.CircuitBreaker
+import org.apache.pekko.pattern.CircuitBreaker
 import failurewall.FailurewallException
-import failurewall.test.{AkkaSpec, BodyPromise, TestHelper}
+import failurewall.test.{PekkoSpec, BodyPromise, TestHelper}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.scalacheck.Gen
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
-class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
+class PekkoCircuitBreakerFailurewallSpec extends PekkoSpec {
 
   private def circuitBreaker(maxFailure: Int = 3,
                              callTimeout: FiniteDuration = 10.seconds,
@@ -17,12 +17,12 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
     CircuitBreaker(system.scheduler, maxFailure, callTimeout, resetTimeout)
   }
 
-  "AkkaCircuitBreakerFailurewall" when {
+  "PekkoCircuitBreakerFailurewall" when {
     "in CLOSED state" should {
       "invoke the given body" in {
         forAll { (result: Int) =>
           val breaker = circuitBreaker()
-          val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+          val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
           val body = BodyPromise[Int]()
           val actual = failurewall.call(body.future)
           body.success(result)
@@ -33,7 +33,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
       "fail with the exception with which the given body fails" in {
         val breaker = circuitBreaker()
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
         val error = new RuntimeException
@@ -44,7 +44,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
       "fail with the exception that the given body throws" in {
         val breaker = circuitBreaker()
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         val error = new RuntimeException
         val actual = failurewall.call(throw error)
         assert(TestHelper.await(actual) === Failure(error))
@@ -52,7 +52,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
       "fail with scala.concurrent.TimeoutException if the given body fails with that error" in {
         val breaker = circuitBreaker()
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
         val error = new scala.concurrent.TimeoutException
@@ -63,7 +63,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
 
       "fail with FailurewallException if calling the body times out" in {
         val breaker = circuitBreaker(callTimeout = 1.nano)
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         val body = BodyPromise[Int]()
         val actual = failurewall.call(body.future)
         intercept[FailurewallException] {
@@ -77,7 +77,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
           val breaker = circuitBreaker(maxFailure = failureTimes)
           val isOpen = new AtomicBoolean(false)
           breaker.onOpen(isOpen.set(true))
-          val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+          val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
           (1 to failureTimes).foreach { _ =>
             val error = new RuntimeException
             val actual = failurewall.call(Future.failed(error))
@@ -97,7 +97,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val breaker = circuitBreaker(maxFailure = failureTimes)
         val isOpen = new AtomicBoolean(false)
         breaker.onOpen(isOpen.set(true))
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         (1 until failureTimes).foreach { _ =>
           val error = new RuntimeException
           val actual = failurewall.call(Future.failed(error))
@@ -130,7 +130,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val breaker = circuitBreaker(maxFailure = 1)
         val isOpen = new AtomicBoolean(false)
         breaker.onOpen(isOpen.set(true))
-        val failurewall = AkkaCircuitBreakerFailurewall.withFeedback[Int](breaker, executor) {
+        val failurewall = PekkoCircuitBreakerFailurewall.withFeedback[Int](breaker, executor) {
           case Success(10) => Unavailable
           case Success(_) => Available
           case Failure(_) => Unavailable
@@ -145,7 +145,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
     "in OPEN state" should {
       "never call the given body and fail immediately" in {
         val breaker = circuitBreaker(maxFailure = 1)
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         TestHelper.await(failurewall.call(Future.failed(new RuntimeException)))
         TestHelper.sleep()
         val body = BodyPromise[Int]()
@@ -163,7 +163,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         breaker.onOpen(isOpen.set(true))
         breaker.onHalfOpen(isHalfOpen.set(true))
 
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         failurewall.call(Future.failed(new RuntimeException))
         TestHelper.awaitAssert(isOpen.get())
         assert(!isHalfOpen.get())
@@ -178,7 +178,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val isHalfOpen = new AtomicBoolean(false)
         breaker.onHalfOpen(isHalfOpen.set(true))
 
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         failurewall.call(Future.failed(new RuntimeException))
         failurewall.call(Future.failed(new RuntimeException))
         TestHelper.awaitAssert(isHalfOpen.get())
@@ -204,7 +204,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val isHalfOpen = new AtomicBoolean(false)
         breaker.onHalfOpen(isHalfOpen.set(true))
 
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         failurewall.call(Future.failed(new RuntimeException))
         TestHelper.awaitAssert(isHalfOpen.get())
 
@@ -228,7 +228,7 @@ class AkkaCircuitBreakerFailurewallSpec extends AkkaSpec {
         val isHalfOpen = new AtomicBoolean(false)
         breaker.onHalfOpen(isHalfOpen.set(true))
 
-        val failurewall = AkkaCircuitBreakerFailurewall[Int](breaker, executor)
+        val failurewall = PekkoCircuitBreakerFailurewall[Int](breaker, executor)
         failurewall.call(Future.failed(new RuntimeException))
         TestHelper.awaitAssert(isHalfOpen.get())
 

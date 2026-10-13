@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "failurewall-root"
   )
-  .aggregate(failurewallCore, failurewallAkka, failurewallPatterns)
+  .aggregate(failurewallCore, failurewallPekko, failurewallPatterns)
 
 lazy val failurewallCore = (project in file("failurewall-core"))
   .settings(basicSettings: _*)
@@ -31,13 +31,13 @@ lazy val failurewallCore = (project in file("failurewall-core"))
     )
   )
 
-lazy val failurewallAkka = (project in file("failurewall-akka"))
+lazy val failurewallPekko = (project in file("failurewall-pekko"))
   .settings(basicSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    name := "failurewall-akka",
+    name := "failurewall-pekko",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.6.20",
+      "org.apache.pekko" %% "pekko-actor" % "1.7.1",
       "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test"
     )
   )
@@ -54,7 +54,7 @@ lazy val failurewallPatterns = (project in file("failurewall-patterns"))
   .dependsOn(
     failurewallCore,
     failurewallCore % "test->test",
-    failurewallAkka
+    failurewallPekko
   )
 
 lazy val failurewallSample = (project in file("failurewall-sample"))
@@ -82,7 +82,7 @@ lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
     Test / parallelExecution := false
   )
   .dependsOn(
-    failurewallAkka
+    failurewallPekko
   )
 
 def Scala212 = "2.12.21"
