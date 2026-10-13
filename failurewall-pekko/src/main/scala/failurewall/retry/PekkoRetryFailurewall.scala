@@ -1,7 +1,7 @@
 package failurewall.retry
 
-import akka.actor.Scheduler
-import akka.pattern.after
+import org.apache.pekko.actor.Scheduler
+import org.apache.pekko.pattern.after
 import failurewall.Failurewall
 import failurewall.util.FailurewallHelper
 import scala.concurrent.{ExecutionContext, Future}
@@ -9,18 +9,18 @@ import scala.util.{Failure, Success, Try}
 
 /**
  * A [[Failurewall]] implementing the retry pattern.
- * Calls wrapped in [[AkkaRetryFailurewall]] can be retried if it fails.
- * [[AkkaRetryFailurewall]] can delay retrials by Akka's [[Scheduler]].
+ * Calls wrapped in [[PekkoRetryFailurewall]] can be retried if it fails.
+ * [[PekkoRetryFailurewall]] can delay retrials by Pekko's [[Scheduler]].
  *
- * [[AkkaRetryFailurewall]] is recommended for resources which may become temporarily unavailable.
+ * [[PekkoRetryFailurewall]] is recommended for resources which may become temporarily unavailable.
  *
  * @param maxTrialTimes max trial times
  * @param strategy backoff strategy
- * @param scheduler Akka's [[Scheduler]] to delay retrials
+ * @param scheduler Pekko's [[Scheduler]] to delay retrials
  * @param feedback feedback logic to test whether this failurewall should retry calling or not
  * @param executor ExecutionContext
  */
-final class AkkaRetryFailurewall[A](maxTrialTimes: Int,
+final class PekkoRetryFailurewall[A](maxTrialTimes: Int,
                                     strategy: BackoffStrategy,
                                     scheduler: Scheduler,
                                     feedback: Try[A] => RetryFeedback,
@@ -46,19 +46,19 @@ final class AkkaRetryFailurewall[A](maxTrialTimes: Int,
   }
 }
 
-object AkkaRetryFailurewall {
+object PekkoRetryFailurewall {
   /**
-   * Creates [[AkkaRetryFailurewall]].
-   * The created [[AkkaRetryFailurewall]] retries if the result is a failed [[Future]].
+   * Creates [[PekkoRetryFailurewall]].
+   * The created [[PekkoRetryFailurewall]] retries if the result is a failed [[Future]].
    * @param maxTrialTimes max trial times
    * @param strategy backoff strategy
-   * @param scheduler Akka's [[Scheduler]] to delay retrials
+   * @param scheduler Pekko's [[Scheduler]] to delay retrials
    * @param executor ExecutionContext
    */
   def apply[A](maxTrialTimes: Int,
                strategy: BackoffStrategy,
                scheduler: Scheduler,
-               executor: ExecutionContext): AkkaRetryFailurewall[A] = {
+               executor: ExecutionContext): PekkoRetryFailurewall[A] = {
     withFeedback(maxTrialTimes, strategy, scheduler, executor) {
       case Success(_) => ShouldNotRetry
       case Failure(_) => ShouldRetry
@@ -66,10 +66,10 @@ object AkkaRetryFailurewall {
   }
 
   /**
-   * Creates [[AkkaRetryFailurewall]] with the given feedback logic.
+   * Creates [[PekkoRetryFailurewall]] with the given feedback logic.
    * @param maxTrialTimes max trial times
    * @param strategy backoff strategy
-   * @param scheduler Akka's [[Scheduler]] to delay retrials
+   * @param scheduler Pekko's [[Scheduler]] to delay retrials
    * @param executor ExecutionContext
    * @param feedback feedback logic to test whether this failurewall should retry calling or not
    */
@@ -77,7 +77,7 @@ object AkkaRetryFailurewall {
                       strategy: BackoffStrategy,
                       scheduler: Scheduler,
                       executor: ExecutionContext)
-                     (feedback: Try[A] => RetryFeedback): AkkaRetryFailurewall[A] = {
-    new AkkaRetryFailurewall[A](maxTrialTimes, strategy, scheduler, feedback, executor)
+                     (feedback: Try[A] => RetryFeedback): PekkoRetryFailurewall[A] = {
+    new PekkoRetryFailurewall[A](maxTrialTimes, strategy, scheduler, feedback, executor)
   }
 }

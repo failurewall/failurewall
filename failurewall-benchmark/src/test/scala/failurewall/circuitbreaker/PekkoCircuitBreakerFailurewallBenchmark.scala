@@ -4,8 +4,8 @@ import failurewall.Failurewall
 import failurewall.test.{ActorSystemSetup, FailurewallBenchmark}
 import scala.concurrent.duration._
 
-class AkkaCircuitBreakerFailurewallBenchmark extends FailurewallBenchmark[Int] with ActorSystemSetup {
-  override protected[this] val failurewall: Failurewall[Int, Int] = AkkaCircuitBreakerFailurewall(
+class PekkoCircuitBreakerFailurewallBenchmark extends FailurewallBenchmark[Int] with ActorSystemSetup {
+  override protected[this] val failurewall: Failurewall[Int, Int] = PekkoCircuitBreakerFailurewall(
     system.scheduler,
     maxFailures = 5,
     callTimeout = 10.seconds,
