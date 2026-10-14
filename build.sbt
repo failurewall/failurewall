@@ -21,8 +21,8 @@ lazy val root = (project in file("."))
   .aggregate(failurewallCore, failurewallPekko, failurewallPatterns)
 
 lazy val failurewallCore = (project in file("failurewall-core"))
-  .settings(basicSettings: _*)
-  .settings(publishSettings: _*)
+  .settings(basicSettings)
+  .settings(publishSettings)
   .settings(
     name := "failurewall-core",
     libraryDependencies ++= Seq(
@@ -32,8 +32,8 @@ lazy val failurewallCore = (project in file("failurewall-core"))
   )
 
 lazy val failurewallPekko = (project in file("failurewall-pekko"))
-  .settings(basicSettings: _*)
-  .settings(publishSettings: _*)
+  .settings(basicSettings)
+  .settings(publishSettings)
   .settings(
     name := "failurewall-pekko",
     libraryDependencies ++= Seq(
@@ -47,7 +47,7 @@ lazy val failurewallPekko = (project in file("failurewall-pekko"))
   )
 
 lazy val failurewallPatterns = (project in file("failurewall-patterns"))
-  .settings(basicSettings: _*)
+  .settings(basicSettings)
   .settings(
     name := "failurewall-patterns"
   )
@@ -58,7 +58,7 @@ lazy val failurewallPatterns = (project in file("failurewall-patterns"))
   )
 
 lazy val failurewallSample = (project in file("failurewall-sample"))
-  .settings(basicSettings: _*)
+  .settings(basicSettings)
   .settings(
     name := "failurewall-sample"
   )
@@ -67,7 +67,7 @@ lazy val failurewallSample = (project in file("failurewall-sample"))
   )
 
 lazy val failurewallBenchmark = (project in file("failurewall-benchmark"))
-  .settings(basicSettings: _*)
+  .settings(basicSettings)
   .settings(
     name := "failurewall-benchmark",
     resolvers ++= Seq(
