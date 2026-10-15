@@ -12,11 +12,10 @@ inThisBuild(List(
   )
 ))
 
-publish / skip := true
-
 lazy val root = (project in file("."))
   .settings(
-    name := "failurewall-root"
+    name := "failurewall-root",
+    publish / skip := true
   )
   .aggregate(failurewallCore, failurewallPekko, failurewallPatterns)
 
