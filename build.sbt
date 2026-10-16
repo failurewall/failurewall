@@ -37,7 +37,7 @@ lazy val failurewallPekko = (project in file("failurewall-pekko"))
     name := "failurewall-pekko",
     libraryDependencies ++= Seq(
       "org.apache.pekko" %% "pekko-actor" % "1.7.1",
-      "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % "test"
+      "org.scalatestplus" %% "mockito-5-23" % "3.2.20.0" % "test"
     )
   )
   .dependsOn(
